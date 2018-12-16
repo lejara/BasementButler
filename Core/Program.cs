@@ -44,7 +44,7 @@ namespace DiscordButlerBot
         //Write to the console any log event
         private async Task Client_Logging(LogMessage msg)
         {
-            Console.WriteLine("Client: " + msg.Message);
+            Console.WriteLine("Client Socket: " + msg.Message);
             
         }
     }

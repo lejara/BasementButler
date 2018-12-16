@@ -34,14 +34,13 @@ namespace DiscordButlerBot.Core
 
             if (userMsg != null) {
                 Console.WriteLine("Messaged Recevied");
-                //info about the client
-                var context = new SocketCommandContext(client_, userMsg);
+                ////info about the client
+                //var context = new SocketCommandContext(client_, userMsg);
 
                 //If bot is mentioned
                 if (userMsg.HasStringPrefix(Config.bot.cmdPrefix, ref argPos) || userMsg.HasMentionPrefix(client_.CurrentUser, ref argPos))
                 {
-
-                    var result = await service_.ExecuteAsync(context, argPos);
+                    var result = await service_.ExecuteAsync(new SocketCommandContext(client_, userMsg), argPos); // fancy magic
                     if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                     {
                         Console.WriteLine("Problem HandleCommandAsync: " + result.ErrorReason);

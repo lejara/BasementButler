@@ -129,6 +129,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Misc.cs" />
     <Compile Include="Core\CommandHandler.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Program.cs" />
