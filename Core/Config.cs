@@ -53,17 +53,27 @@ namespace DiscordButlerBot.Core
             }
 
             //Load or create channel ids file
-            if (!Directory.Exists(channelIdPath))
+            if (!File.Exists(channelIdPath))
             {
                 voiceChannelIds = new List<ulong>();
-                string json = JsonConvert.SerializeObject(voiceChannelIds, Formatting.Indented);
-                File.WriteAllText(channelIdPath, json);
+                SaveChannelIds();
             }
             else {
                 string json = File.ReadAllText(channelIdPath);
                 voiceChannelIds = JsonConvert.DeserializeObject<List<ulong>>(json);
+                LoadChannelIds();
             }
 
+        }
+
+        public static void LoadChannelIds() {
+            string json = File.ReadAllText(channelIdPath);
+            voiceChannelIds = JsonConvert.DeserializeObject<List<ulong>>(json);
+        }
+        public static void SaveChannelIds()
+        {            
+            string json = JsonConvert.SerializeObject(voiceChannelIds, Formatting.Indented);
+            File.WriteAllText(channelIdPath, json);
         }
 
     }

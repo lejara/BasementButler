@@ -18,7 +18,6 @@ namespace DiscordButlerBot.Commands
             int numberOFTeams = 0;
             if (Int32.TryParse(numOfTeams, out numberOFTeams))
             {
-
                 Config.teamMakerInfo.numberOFTeams_ = numberOFTeams;
 
                 var callingUser = Context.User as IGuildUser;                
@@ -47,9 +46,7 @@ namespace DiscordButlerBot.Commands
             }
             else {
                 await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, i need to know the number of teams first. (!MakeTeams #)", Context.User.Username));
-            }
-
-            
+            }            
         }
 
         [Command("exclude")]

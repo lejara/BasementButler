@@ -12,18 +12,74 @@ namespace DiscordButlerBot.Commands
     public class Misc : ModuleBase<SocketCommandContext>
     {
 
+
+        [Command("welcome")]
+        [RequireOwner]
+        public async Task Welcome() {
+
+            await Context.Channel.SendMessageAsync("**Greetings, glad to be of service**");
+            
+        }
+        [Command("addThisVChannel")]
+        [RequireOwner]
+        public async Task AddChannel() {
+            var callingUser = Context.User as IGuildUser;
+            var voiceChannelUserIn = callingUser.VoiceChannel;
+            if (voiceChannelUserIn != null)
+            {
+                if (Config.voiceChannelIds.Contains(voiceChannelUserIn.Id))
+                {
+                    await Context.Channel.SendMessageAsync("This channel is already in my list master");                    
+                }
+                else {
+                    Config.voiceChannelIds.Add(voiceChannelUserIn.Id);
+                    await Context.Channel.SendMessageAsync("I have added "+ voiceChannelUserIn.Name + " voice channel into my list");
+                    Config.SaveChannelIds();
+                }                
+            }
+            else {
+                await Context.Channel.SendMessageAsync("Sorry master you need to be in a voice channel for this work");
+            }
+        }
+        [Command("removeThisVChannel")]
+        [RequireOwner]
+        public async Task RemoveChannel()
+        {
+            var callingUser = Context.User as IGuildUser;
+            var voiceChannelUserIn = callingUser.VoiceChannel;
+            if (voiceChannelUserIn != null)
+            {
+                if (Config.voiceChannelIds.Contains(voiceChannelUserIn.Id))
+                {
+                    Config.voiceChannelIds.Remove(voiceChannelUserIn.Id);
+                    await Context.Channel.SendMessageAsync("I have removed " + voiceChannelUserIn.Name + " from my list");
+                    Config.SaveChannelIds();
+                }
+                else
+                {                    
+                    await Context.Channel.SendMessageAsync("Master the voice your in is already not in my list");                    
+                }
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync("Sorry master you need to be in a voice channel for this work");
+            }
+        }
+
         [Command("hi")]
         public async Task Speak()
         {
             var user = Context.User as IGuildUser;
             string username = Context.User.Username;
-            if (user.Nickname != "" && user.Nickname != null){
+            if (user.Nickname != "" && user.Nickname != null)
+            {
                 await Context.Channel.SendMessageAsync(String.Format("Greetings master {0}.", user.Nickname));
             }
-            else {
+            else
+            {
                 await Context.Channel.SendMessageAsync(String.Format("Greetings master {0}.:", username));
             }
-                
+
         }
         [Command("listvoice")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
