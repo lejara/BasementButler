@@ -11,34 +11,33 @@ namespace DiscordButlerBot.Commands
 {
     public class Misc : ModuleBase<SocketCommandContext>
     {
-        //TODO: use a json implem for setting ids
-        const ulong generalTwoID = 523667456133300268;
-        const ulong serverID = 523627638527492135;
 
-        [Command("speak")]
-        public async Task Speak() {
-            string username = Context.User.Username;
-            await Context.Channel.SendMessageAsync("Hello master " + username + ".");
-        }
-        [Command("copy")]
-        [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
-        public async Task Copy([Remainder] string message)
+        [Command("hi")]
+        public async Task Speak()
         {
+            var user = Context.User as IGuildUser;
             string username = Context.User.Username;
-            await Context.Channel.SendMessageAsync(username + " said, " + message);
+            if (user.Nickname != "" && user.Nickname != null){
+                await Context.Channel.SendMessageAsync(String.Format("Greetings master {0}.", user.Nickname));
+            }
+            else {
+                await Context.Channel.SendMessageAsync(String.Format("Greetings master {0}.:", username));
+            }
+                
         }
-        [Command("list")]
+        [Command("listvoice")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
-        public async Task List()
+        public async Task ListVoice()
         {
             var callingUser = Context.User as IGuildUser;
-            var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == serverID);
+            var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == Config.bot.serverID);
             var voiceChannelUserIn = guild.Channels.FirstOrDefault(c => c.Id == callingUser.VoiceChannel.Id);
 
             string listingReplyMsg = "Master " + callingUser.Username + ", the people in voice " + voiceChannelUserIn.Name + " are:\n";
 
             var users = voiceChannelUserIn.Users;
-            foreach (var user in users) {
+            foreach (var user in users)
+            {
 
                 var gUser = user as IGuildUser;
 
@@ -47,19 +46,12 @@ namespace DiscordButlerBot.Commands
                 {
                     listingReplyMsg += " ( " + user.Nickname + " )" + "\n";
                 }
-                else {
+                else
+                {
                     listingReplyMsg += "\n";
                 }
-
-                //Move a user(testing)
-                await gUser.ModifyAsync(x =>
-                {
-                    x.ChannelId = generalTwoID;
-                });
-
             }
             await Context.Channel.SendMessageAsync(listingReplyMsg);
-
 
         }
     }
