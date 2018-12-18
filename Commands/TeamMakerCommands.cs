@@ -10,7 +10,7 @@ using DiscordButlerBot.Commands.CommandCompoments;
 
 namespace DiscordButlerBot.Commands
 {
-    public class TeamMakerCommands : ModuleBase<SocketCommandContext>
+    public class TeamMakerCommands : CommandBase
     {
         [Command("MakeTeams")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
@@ -31,7 +31,7 @@ namespace DiscordButlerBot.Commands
                 if (Config.teamMakerInfo.guildUsersInVoice_.Count >= numberOFTeams)
                 {
                     //Output and list
-                    string msg = "Master " + callingUser.Username + ", these are the people who will be place into teams: \n";
+                    string msg = "Master " +  GetName() + ", these are the people who will be place into teams: \n";
                     msg += Config.teamMakerInfo.ListUsersInVoice();
 
                     msg += "Would you like to go ahead and \"!MakeRandom\" the teams, or would you like to \"!exclude #\" a user?\n";
@@ -64,7 +64,7 @@ namespace DiscordButlerBot.Commands
 
                     if (removingUser == null)
                     {
-                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, could not find the user based on the number you gave.", Context.User.Username));
+                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, could not find the user based on the number you gave.", GetName()));
                     }
                     else
                     {
@@ -97,7 +97,7 @@ namespace DiscordButlerBot.Commands
         [Command("makerandom")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task MakeRandom() {
-            if (Config.teamMakerInfo.currentStage_ == TeamMakingStages.listing) {
+            if (Config.teamMakerInfo.currentStage_ == TeamMakingStages.listing || Config.teamMakerInfo.currentStage_ == TeamMakingStages.move || Config.teamMakerInfo.currentStage_ == TeamMakingStages.made) {
 
                 Config.teamMakerInfo.ShuffleUsersInVoice();
                 Config.teamMakerInfo.AssignTeams();
