@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord;
+using Discord.WebSocket;
 
 namespace DiscordButlerBot.Commands
 {
@@ -17,13 +18,16 @@ namespace DiscordButlerBot.Commands
         [RequireOwner]
         public async Task Welcome() {
 
-            //metion everyone
-            //foreach (var role in Context.Guild.Roles) {
-            //    await Context.Channel.SendMessageAsync(role.Mention);
-            //}
-            
-            await Context.Channel.SendMessageAsync("**Greetings, glad to be of service !~~~ ** " + Context.Guild.Roles.Last());
+            await Context.Channel.SendMessageAsync("**Greetings, glad to be of service !~~~ ** ");
 
+            foreach (var role in Context.Guild.Roles) {
+                if (!(role.Name.Contains("everyone") || role.Name.Contains("Basement")))
+                {
+                    await Context.Channel.SendMessageAsync(role.Mention);
+                }
+
+            }
+            
         }
         [Command("addThisVChannel")]
         [RequireOwner]
@@ -110,7 +114,7 @@ namespace DiscordButlerBot.Commands
         }
         [Command("setvctopic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
-        public async Task SetVCTopic(string newTopic = "") {
+        public async Task SetVCTopic([Remainder] string newTopic = "") {
             
             var callingUser = Context.User as IGuildUser;
             var voiceChannelUserIn = callingUser.VoiceChannel;
