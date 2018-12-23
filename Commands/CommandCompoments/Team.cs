@@ -38,19 +38,41 @@ namespace DiscordButlerBot.Commands.CommandCompoments
 
         //Returns a string of memebers formatted
         public string GetStringMembersFormatted() {
-            string msg = teamName_ + " : \n";
+            string msg = String.Format("**{0}** : \n", teamName_);
             foreach (var user in users_) {
-                msg += "\t-" + user.Username;
+                msg += "\t -" + user.Username;
                 if (user.Nickname != "" && user.Nickname != null)
                 {
                     msg += " ( " + user.Nickname + " )" + "\n";
                 }
                 else
                 {
-                    msg += "\n";
+                    msg += "\n\n";
                 }
             }
             return msg;
+        }
+
+        //Returns a embed object of a list of memebers in this team
+        public EmbedBuilder GetEmbedMembersFormatted()
+        {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle(teamName_);
+            embed.WithColor(teamID_*10, teamID_ * 10, teamID_ * 10);
+            string list = "";
+            foreach (var user in users_)
+            {
+                list += "\t-" + user.Username;
+                if (user.Nickname != "" && user.Nickname != null)
+                {
+                    list += " ( " + user.Nickname + " )" + "\n";
+                }
+                else
+                {
+                    list += "\n";
+                }
+            }
+            return embed;
         }
     }
 }

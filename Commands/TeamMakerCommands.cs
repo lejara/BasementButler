@@ -32,12 +32,11 @@ namespace DiscordButlerBot.Commands
                 {
                     //Output and list
                     string msg = "Master " +  GetName() + ", these are the people who will be place into teams: \n";
-                    msg += Config.teamMakerInfo.ListUsersInVoice();
-
-                    msg += "Would you like to go ahead and \"!MakeRandom\" the teams, or would you like to \"!exclude #\" a user?\n";
+                    EmbedBuilder embed = Config.teamMakerInfo.ListUsersInVoiceEmbed();
+                    embed.WithFooter("Would you like to \"!MakeRandom\" the teams, or \"!exclude #\" a user?");
                     Config.teamMakerInfo.currentStage_ = TeamMakingStages.listing;
 
-                    await Context.Channel.SendMessageAsync(msg);
+                    await Context.Channel.SendMessageAsync(msg, false, embed);
                 }
                 else {
                     await Context.Channel.SendMessageAsync("There are too few users for the number of teams you like master!");
@@ -78,19 +77,20 @@ namespace DiscordButlerBot.Commands
                                 name += " ( " + removingUser.Nickname + " )" + "\n";
                             }
 
-                            string msg = String.Format("I have removed {0} from the list. The new list is now: \n", name);
-                            msg += Config.teamMakerInfo.ListUsersInVoice();
-                            await Context.Channel.SendMessageAsync(msg);
+                            string msg = String.Format("I have removed \"{0}\" from the list. The new list is now: \n", name);
+                            EmbedBuilder embed = Config.teamMakerInfo.ListUsersInVoiceEmbed();
+                            embed.WithFooter("Would you like to \"!MakeRandom\" the teams, or again \"!exclude #\" a user?");
+                            await Context.Channel.SendMessageAsync(msg, false, embed);
                         }
                         else {
-                            await Context.Channel.SendMessageAsync(String.Format("Master {0}, there are now too few users to be in the teams you like now. Remake.", Context.User.Username));
+                            await Context.Channel.SendMessageAsync(String.Format("Master {0}, there are now too few users to be in the teams you like now. Remake (!MakeTeams #).", Context.User.Mention));
                             Config.teamMakerInfo.currentStage_ = TeamMakingStages.empty;
                         }
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, you need to give me a number based on my list (!exclude #)", Context.User.Username));
+                    await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, you need to give me a valid number based on my list (!exclude #)", Context.User.Mention));
                 }
             }
         }
@@ -102,21 +102,25 @@ namespace DiscordButlerBot.Commands
                 Config.teamMakerInfo.ShuffleUsersInVoice();
                 Config.teamMakerInfo.AssignTeams();
 
-                string msg = "These are the teams master: \n";
+                string msg = "" /*"These are the teams master: \n"*/;
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.WithColor(200, 0, 0);
+                embed.WithThumbnailUrl("https://cdn0.iconfinder.com/data/icons/sea-nautical-pirate-maritime/35/9-512.png");
                 foreach (var team in Config.teamMakerInfo.teams_) {
                     msg += team.GetStringMembersFormatted();
 
                 }
+                embed.WithDescription(msg);
 
                 Config.teamMakerInfo.currentStage_ = TeamMakingStages.made;
 
                 if (Config.voiceChannelIds.Count >= Config.teamMakerInfo.teams_.Count) {
-                    msg += "Would you like to \"!moveteams\" to different voice channels?";
+                    embed.WithFooter( "Would you like to \"!moveteams\" to different voice channels?");
                     Config.teamMakerInfo.currentStage_ = TeamMakingStages.move;
                 }
                 
 
-                await Context.Channel.SendMessageAsync(msg);
+                await Context.Channel.SendMessageAsync("These are your teams master: \n", false, embed);
             }
 
         }

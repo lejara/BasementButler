@@ -110,7 +110,11 @@ namespace DiscordButlerBot.Commands
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task BadTimes()
         {
-            await Context.Channel.SendMessageAsync("BAKA! *slaps you*");
+            var user = Context.User as IGuildUser;
+            if (!user.Username.Contains("Nemu")) {
+                await Context.Channel.SendMessageAsync("BAKA! *slaps you* ");
+            }
+            
         }
         [Command("setvctopic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
@@ -123,18 +127,15 @@ namespace DiscordButlerBot.Commands
                 if (newTopic != null || newTopic == "")
                 {
 
-                    string vcName = voiceChannelUserIn.Name;
-                    int index = vcName.IndexOf("(");
-                    if (index != -1)
-                    {
-                        vcName = vcName.Remove(index - 1);
-                    }
+                    string vcName = voiceChannelUserIn.Name;                   
+                    string oldvcName = RemoveTopicBracket(ref vcName) == false ? voiceChannelUserIn.Name : vcName;
+
                     vcName += String.Format(" ({0})", newTopic);
                     await callingUser.VoiceChannel.ModifyAsync(x =>
                     {
                         x.Name = vcName;
                     });
-                    await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to {1}", GetName(), newTopic));
+                    await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in voice {2}", callingUser.Mention, newTopic, oldvcName));
 
                 }
                 else
@@ -143,7 +144,7 @@ namespace DiscordButlerBot.Commands
                 }
             }
             else {
-
+                await Context.Channel.SendMessageAsync(String.Format("Master {0}, you need to be in a voice channel to set a topic!", callingUser.Mention));
             }
         }
         [Command("clearvctopic")]
@@ -153,19 +154,35 @@ namespace DiscordButlerBot.Commands
             var callingUser = Context.User as IGuildUser;
             var voiceChannelUserIn = callingUser.VoiceChannel;
             string vcName = voiceChannelUserIn.Name;
-            int index = vcName.IndexOf("(");
-            if (index != -1)
+            if (voiceChannelUserIn != null)
             {
-                vcName = vcName.Remove(index - 1);
-                await callingUser.VoiceChannel.ModifyAsync(x =>
+                if (RemoveTopicBracket(ref vcName))
                 {
-                    x.Name = vcName;
-                });
-                await Context.Channel.SendMessageAsync("VC topic was removed Master " + GetName());
+                    await callingUser.VoiceChannel.ModifyAsync(x =>
+                    {
+                        x.Name = vcName;
+                    });
+                    await Context.Channel.SendMessageAsync( String.Format("Topic was removed Master {0} in voice {1}", callingUser.Mention, vcName));
+                }
+                else
+                {
+                    await Context.Channel.SendMessageAsync("Master, no topic was set in " + vcName);
+                }
             }
             else {
-                await Context.Channel.SendMessageAsync("Master, no topic was set here ");
+                await Context.Channel.SendMessageAsync(String.Format("Master {0}, you need to be in a voice channel to clear a topic", callingUser.Mention));
             }
+        }
+        //Returns a changed ref of a string, returns flase if brackets did not exist
+        bool RemoveTopicBracket(ref string name) {
+            bool hasRemoved = false;
+            int index = name.IndexOf("(");
+            if (index != -1)
+            {
+                name = name.Remove(index - 1);
+                hasRemoved = true;
+            }
+            return hasRemoved;
         }
         [Command("listvoice")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
@@ -175,9 +192,13 @@ namespace DiscordButlerBot.Commands
             var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == Config.bot.serverID);
             var voiceChannelUserIn = guild.Channels.FirstOrDefault(c => c.Id == callingUser.VoiceChannel.Id);
 
-            string listingReplyMsg = "Master " + GetName() + ", the people in voice " + voiceChannelUserIn.Name + " are:\n";
+            string listingReplyMsg = "";
 
             var users = voiceChannelUserIn.Users;
+            EmbedBuilder em = new EmbedBuilder();
+            em.WithTitle("People in Voice");
+            em.WithColor(new Color(10, 10, 10));
+            em.WithFooter("");
             foreach (var user in users)
             {
 
@@ -193,7 +214,8 @@ namespace DiscordButlerBot.Commands
                     listingReplyMsg += "\n";
                 }
             }
-            await Context.Channel.SendMessageAsync(listingReplyMsg);
+            em.WithDescription(listingReplyMsg);
+            await Context.Channel.SendMessageAsync("Master " + GetName() + ", the people in voice " + voiceChannelUserIn.Name + " are:\n", false, em);
 
         }
     }

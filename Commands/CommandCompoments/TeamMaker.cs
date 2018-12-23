@@ -80,15 +80,36 @@ namespace DiscordButlerBot.Commands.CommandCompoments
                 msg += ++ctr + ". " + user.Username;
                 if (user.Nickname != "" && user.Nickname != null)
                 {
-                    msg += " ( " + user.Nickname + " )" + "\n";
+                    msg += " ( " + user.Nickname + " )";
                 }
-                else
-                {
-                    msg += "\n";
-                }
+
+                 msg += "\n";
+
 
             }
             return msg;
+        }
+        //Returns a embed builder of all users  in the voice list formatted
+        public EmbedBuilder ListUsersInVoiceEmbed()
+        {
+            string msg = "";
+            EmbedBuilder embed = new EmbedBuilder();
+            int ctr = 0;
+            foreach (var user in guildUsersInVoice_)
+            {
+
+                msg += ++ctr + ". " + user.Username;
+                if (user.Nickname != "" && user.Nickname != null)
+                {
+                    msg += " ( " + user.Nickname + " )";
+                }
+
+                msg += "\n";
+
+
+            }
+            embed.WithDescription(msg);
+            return embed;
         }
 
         //Shuffles the guildUsersInVoice_ 
