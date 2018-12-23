@@ -16,7 +16,7 @@ namespace DiscordButlerBot
 
     class Program
     {
-        public static double version = 2.0; // 2.0
+        public static double version = 1.5; // 2.0
 
         public DiscordSocketClient client_;
         public CommandHandler handler_;

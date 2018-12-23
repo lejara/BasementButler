@@ -31,20 +31,21 @@ namespace DiscordButlerBot.Commands
                 if (Config.teamMakerInfo.guildUsersInVoice_.Count >= numberOFTeams)
                 {
                     //Output and list
-                    string msg = "Master " +  GetName() + ", these are the people who will be place into teams: \n";
+                    string msg = "Masters, here is your list who will be place into teams: \n";
                     EmbedBuilder embed = Config.teamMakerInfo.ListUsersInVoiceEmbed();
+                    embed.WithTitle("Members to be in teams");
                     embed.WithFooter("Would you like to \"!MakeRandom\" the teams, or \"!exclude #\" a user?");
                     Config.teamMakerInfo.currentStage_ = TeamMakingStages.listing;
 
                     await Context.Channel.SendMessageAsync(msg, false, embed);
                 }
                 else {
-                    await Context.Channel.SendMessageAsync("There are too few users for the number of teams you like master!");
+                    await Context.Channel.SendMessageAsync("There are far too few users for the number of teams you like master!");
                 }
                          
             }
             else {
-                await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, i need to know the number of teams first. (!MakeTeams #)", Context.User.Username));
+                await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, i need to know the number of teams first. (!MakeTeams #)", Context.User.Mention));
             }            
         }
 
@@ -63,7 +64,7 @@ namespace DiscordButlerBot.Commands
 
                     if (removingUser == null)
                     {
-                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, could not find the user based on the number you gave.", GetName()));
+                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, could not find the user based on the number you gave.", Context.User.Mention ));
                     }
                     else
                     {
@@ -102,7 +103,7 @@ namespace DiscordButlerBot.Commands
                 Config.teamMakerInfo.ShuffleUsersInVoice();
                 Config.teamMakerInfo.AssignTeams();
 
-                string msg = "" /*"These are the teams master: \n"*/;
+                string msg = "";
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.WithColor(200, 0, 0);
                 embed.WithThumbnailUrl("https://cdn0.iconfinder.com/data/icons/sea-nautical-pirate-maritime/35/9-512.png");
@@ -120,7 +121,7 @@ namespace DiscordButlerBot.Commands
                 }
                 
 
-                await Context.Channel.SendMessageAsync("These are your teams master: \n", false, embed);
+                await Context.Channel.SendMessageAsync("These are your teams masters: \n", false, embed);
             }
 
         }

@@ -195,8 +195,10 @@ namespace DiscordButlerBot.Commands
             string listingReplyMsg = "";
 
             var users = voiceChannelUserIn.Users;
+            string vcName = voiceChannelUserIn.Name;
+            RemoveTopicBracket(ref vcName);
             EmbedBuilder em = new EmbedBuilder();
-            em.WithTitle("People in Voice");
+            em.WithTitle("Members in Voice " + vcName);
             em.WithColor(new Color(10, 10, 10));
             em.WithFooter("");
             foreach (var user in users)
@@ -215,7 +217,7 @@ namespace DiscordButlerBot.Commands
                 }
             }
             em.WithDescription(listingReplyMsg);
-            await Context.Channel.SendMessageAsync("Master " + GetName() + ", the people in voice " + voiceChannelUserIn.Name + " are:\n", false, em);
+            await Context.Channel.SendMessageAsync("Master " + callingUser.Mention + ", here is your list: \n", false, em);
 
         }
     }
