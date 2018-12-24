@@ -121,7 +121,7 @@ namespace DiscordButlerBot.Commands
                 }
                 
 
-                await Context.Channel.SendMessageAsync("These are your teams masters: \n", false, embed);
+                await Context.Channel.SendMessageAsync("These are the teams: \n", false, embed);
             }
 
         }

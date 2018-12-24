@@ -78,13 +78,16 @@ namespace DiscordButlerBot.Commands
         [Command("commands")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task Commands() {
-            string msg = "These are your commands master " + GetName() + ":\n" +
-                "- !hi - say hi.\n" +
-                "- !listvoice - tells you who is in your voice channel.\n" +
-                "- !getdrink (name) - Will give you the drink of your liking *wink*\n" +
-                "- !maketeams # - orgainzes a team in vc, and can escort teams to different voice channels.\n" +
-                "- !setvctopic (name) - adds a topic to the voice channel your currently in.\n" +
-                "- !clearvctopic - removes the topic to the voice channel your currently in.";
+            string msg = 
+                "\n These are your commands master " + Context.User.Mention + " : \n" +
+                "```" +
+                "!hi - Say hi.\n\n" +                
+                "!getdrink (name) - Will give you the drink of your liking *wink*\n\n" +
+                "!maketeams # - Orgainzes a team from voice chat, and can escort teams to different voice channels.\n\n" +
+                "!setvctopic (topic) - Adds a topic to the voice channel your currently in.\n\n" +
+                "!clearvctopic - Removes the topic to the voice channel your currently in.\n\n" +
+                "!listvoice - list all users in your current voice channel." +
+                "```";
             await Context.Channel.SendMessageAsync(msg);
         }
         [Command("hi")]
