@@ -114,8 +114,12 @@ namespace DiscordButlerBot.Commands
         public async Task BadTimes()
         {
             var user = Context.User as IGuildUser;
-            if (!user.Username.Contains("Nemu")) {
+            if (!user.Username.Contains("Nemu"))
+            {
                 await Context.Channel.SendMessageAsync("BAKA! *slaps you* ");
+            }
+            else {
+                await Context.Channel.SendMessageAsync(String.Format("AAAAHH~!! YES SENPAIIII <3~~~ {0}", Context.User.Mention));
             }
             
         }

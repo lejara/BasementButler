@@ -31,7 +31,7 @@ namespace DiscordButlerBot.Commands
                 if (Config.teamMakerInfo.guildUsersInVoice_.Count >= numberOFTeams)
                 {
                     //Output and list
-                    string msg = "Masters, here is your list who will be place into teams: \n";
+                    string msg = "Master, here is your list of users that will be place into teams: \n";
                     EmbedBuilder embed = Config.teamMakerInfo.ListUsersInVoiceEmbed();
                     embed.WithTitle("Members to be in teams");
                     embed.WithFooter("Would you like to \"!MakeRandom\" the teams, or \"!exclude #\" a user?");

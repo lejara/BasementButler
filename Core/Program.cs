@@ -16,7 +16,9 @@ namespace DiscordButlerBot
 
     class Program
     {
-        public static double version = 1.5; // 2.0
+        public static double versionMajor = 1;
+        public static double versionMinor = 5; 
+        public static double versionPatch = 1; 
 
         public DiscordSocketClient client_;
         public CommandHandler handler_;
@@ -28,7 +30,7 @@ namespace DiscordButlerBot
 
             //Init
             if (Config.bot.token != "" && Config.bot.token != null) {
-                Console.WriteLine("DiscordButlerBot Ver: " + version);
+                Console.WriteLine(String.Format("DiscordButlerBot Ver: {0}.{1}.{2} ", versionMajor, versionMinor, versionPatch));
                 //Init REST socket
                 client_ = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose });
                 client_.Log += Client_Logging;
