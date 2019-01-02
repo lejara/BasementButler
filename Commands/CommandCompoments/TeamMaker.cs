@@ -19,6 +19,9 @@ namespace DiscordButlerBot.Commands.CommandCompoments
 
         public TeamMakingStages currentStage_ = TeamMakingStages.empty;
 
+        //By defualt the first voice channel in our list is the defualt
+        public ulong defualtVoiceChannel;
+
         public List<IGuildUser> guildUsersInVoice_;
         public List<Team> teams_;
 
@@ -26,6 +29,7 @@ namespace DiscordButlerBot.Commands.CommandCompoments
             currentStage_ = TeamMakingStages.empty;
             guildUsersInVoice_ = null;
             numberOFTeams_ = 0;
+            defualtVoiceChannel = Config.voiceChannelIds.FirstOrDefault();
 
         }
 
@@ -70,7 +74,7 @@ namespace DiscordButlerBot.Commands.CommandCompoments
         }
 
         //Returns a string of all users  in the voice list formatted
-        public string ListUsersInVoice()
+        public string ListUsersInCurrentVoice()
         {
             string msg = "";
             int ctr = 0;
@@ -98,14 +102,13 @@ namespace DiscordButlerBot.Commands.CommandCompoments
             foreach (var user in guildUsersInVoice_)
             {
 
-                msg += ++ctr + ". " + user.Username;
-                if (user.Nickname != "" && user.Nickname != null)
-                {
-                    msg += " ( " + user.Nickname + " )";
-                }
+                msg += ++ctr + ". " + user.Mention;
+                //if (user.Nickname != "" && user.Nickname != null)
+                //{
+                //    msg += " ( " + user.Nickname + " )";
+                //}
 
                 msg += "\n";
-
 
             }
             embed.WithDescription(msg);

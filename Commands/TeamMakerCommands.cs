@@ -113,14 +113,17 @@ namespace DiscordButlerBot.Commands
                 }
                 embed.WithDescription(msg);
 
-                Config.teamMakerInfo.currentStage_ = TeamMakingStages.made;
-
-                if (Config.voiceChannelIds.Count >= Config.teamMakerInfo.teams_.Count) {
-                    embed.WithFooter( "Would you like to \"!moveteams\" to different voice channels?");
+                //check if there enough voice channels for each teams
+                if (Config.voiceChannelIds.Count >= Config.teamMakerInfo.teams_.Count)
+                {
+                    embed.WithFooter("Would you like to \"!moveteams\" to different voice channels?");
                     Config.teamMakerInfo.currentStage_ = TeamMakingStages.move;
                 }
+                else {
+                    Config.teamMakerInfo.currentStage_ = TeamMakingStages.made;
+                    embed.WithFooter("Cannot move teams, not enough voice channels for each teams");
+                }
                 
-
                 await Context.Channel.SendMessageAsync("These are the teams: \n", false, embed);
             }
 
@@ -134,7 +137,18 @@ namespace DiscordButlerBot.Commands
                     await team.MoveUsers(Config.voiceChannelIds[counter]);
                     counter++;
                 }
-                await Context.Channel.SendMessageAsync("Teams are now in their channels.");
+                await Context.Channel.SendMessageAsync("Teams are now in their channels. You can \"!groupback\" to bring everyone together.");
+            }
+        }
+
+        [Command("groupback")]
+        [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
+        public async Task MoveBackTeams(){
+            if (Config.teamMakerInfo.currentStage_ == TeamMakingStages.move){
+
+                foreach (var team in Config.teamMakerInfo.teams_) {
+                    await team.MoveUsers(Config.teamMakerInfo.defualtVoiceChannel);
+                }
             }
         }
     }

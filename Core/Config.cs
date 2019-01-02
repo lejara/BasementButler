@@ -31,9 +31,6 @@ namespace DiscordButlerBot.Core
 
         //Load the BotConfig. creates if it does not exist
         static Config() {
-
-            teamMakerInfo = new TeamMaker();
-
             //Create directory if does not exist
             if (!Directory.Exists(configFolder)) {
                 Directory.CreateDirectory(configFolder);
@@ -63,6 +60,8 @@ namespace DiscordButlerBot.Core
                 voiceChannelIds = JsonConvert.DeserializeObject<List<ulong>>(json);
                 LoadChannelIds();
             }
+
+            teamMakerInfo = new TeamMaker();
 
         }
 

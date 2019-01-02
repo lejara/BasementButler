@@ -40,16 +40,16 @@ namespace DiscordButlerBot.Commands.CommandCompoments
         public string GetStringMembersFormatted() {
             string msg = String.Format("**{0}** : \n", teamName_);
             foreach (var user in users_) {
-                msg += "\t -" + user.Username;
-                if (user.Nickname != "" && user.Nickname != null)
-                {
-                    msg += " ( " + user.Nickname + " )" + "\n";
-                }
-                else
-                {
-                    msg += "\n";
-                }
+                msg += "  -" + user.Mention;
+                
+                //if (user.Nickname != "" && user.Nickname != null)
+                //{
+                //    msg += " ( " + user.Nickname + " )";
+                //}
+
+                msg += "\n";
             }
+            msg += "\n";
             return msg;
         }
 
