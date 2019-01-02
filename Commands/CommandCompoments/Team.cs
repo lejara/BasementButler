@@ -47,7 +47,7 @@ namespace DiscordButlerBot.Commands.CommandCompoments
                 }
                 else
                 {
-                    msg += "\n\n";
+                    msg += "\n";
                 }
             }
             return msg;
