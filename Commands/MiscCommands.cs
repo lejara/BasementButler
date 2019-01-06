@@ -171,7 +171,7 @@ namespace DiscordButlerBot.Commands
                         await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in {2}", callingUser.Mention, newTopic, oldvcName));
                     }
                     else {
-                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, the topic name is too long it needs to be less then {1} characters.", callingUser.Mention, Config.bot.maxTopicNameLength));
+                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, the topic name is too long it needs to be less than {1} characters.", callingUser.Mention, Config.bot.maxTopicNameLength));
                     }
                 }
                 else
