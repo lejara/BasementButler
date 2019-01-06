@@ -84,8 +84,8 @@ namespace DiscordButlerBot.Commands
                 "!hi - Say hi.\n\n" +                
                 "!getdrink (name) - Will give you the drink of your liking *wink*\n\n" +
                 "!maketeams # - Orgainzes a team from voice chat, and can escort teams to different voice channels.\n\n" +
-                "!setvctopic (topic) - Adds a topic to the voice channel your currently in.\n\n" +
-                "!clearvctopic - Removes the topic to the voice channel your currently in.\n\n" +
+                "!vctopic (topic) - Adds a topic to the voice channel your currently in.\n\n" +
+                "!rmvctopic - Removes the topic to the voice channel your currently in.\n\n" +
                 "!listvoice - list all users in your current voice channel." +
                 "```";
             await Context.Channel.SendMessageAsync(msg);
@@ -130,7 +130,7 @@ namespace DiscordButlerBot.Commands
             }
             
         }
-        [Command("setvctopic")]
+        [Command("vctopic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task SetVCTopic([Remainder] string newTopic = "") {
             
@@ -161,7 +161,7 @@ namespace DiscordButlerBot.Commands
                 await Context.Channel.SendMessageAsync(String.Format("Master {0}, you need to be in a voice channel to set a topic!", callingUser.Mention));
             }
         }
-        [Command("clearvctopic")]
+        [Command("rmvctopic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task ClearVCTopic(){
 
@@ -220,15 +220,12 @@ namespace DiscordButlerBot.Commands
 
                 var gUser = user as IGuildUser;
 
-                listingReplyMsg += "-" + user.Username;
-                if (user.Nickname != "" && user.Nickname != null)
-                {
-                    listingReplyMsg += " ( " + user.Nickname + " )" + "\n";
-                }
-                else
-                {
-                    listingReplyMsg += "\n";
-                }
+                listingReplyMsg += "-" + user.Mention;
+                //if (user.Nickname != "" && user.Nickname != null)
+                //{
+                //    listingReplyMsg += " ( " + user.Nickname + " )";
+                //}
+                listingReplyMsg += "\n";
             }
             em.WithDescription(listingReplyMsg);
             await Context.Channel.SendMessageAsync("Master " + callingUser.Mention + ", here is your list: \n", false, em);
