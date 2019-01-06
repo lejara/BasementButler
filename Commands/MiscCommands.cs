@@ -29,6 +29,22 @@ namespace DiscordButlerBot.Commands
             }
             
         }
+        [Command("setTopicLength")]
+        [RequireOwner]
+        public async Task SetTopicLength(string num = "") {
+            int newLength = 0;
+            if (Int32.TryParse(num, out newLength))
+            {
+                Config.bot.maxTopicNameLength = newLength;
+                Config.SaveConfigFile();
+                await Context.Channel.SendMessageAsync(String.Format("I have set the topic length to {0} master.", Config.bot.maxTopicNameLength));
+            }
+            else {
+                await Context.Channel.SendMessageAsync("Could not set topic new length");
+            }
+
+        }
+
         [Command("addThisVChannel")]
         [RequireOwner]
         public async Task AddChannel() {
@@ -75,6 +91,8 @@ namespace DiscordButlerBot.Commands
             }
         }
         //------------------------------------------------------------------
+
+
         [Command("commands")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task Commands() {
@@ -138,19 +156,23 @@ namespace DiscordButlerBot.Commands
             var voiceChannelUserIn = callingUser.VoiceChannel;
             if (voiceChannelUserIn != null)
             {
-                if (newTopic != null || newTopic == "")
+                if (newTopic != null && newTopic != "")
                 {
-
-                    string vcName = voiceChannelUserIn.Name;                   
-                    string oldvcName = RemoveTopicBracket(ref vcName) == false ? voiceChannelUserIn.Name : vcName;
-
-                    vcName += String.Format(" ({0})", newTopic);
-                    await callingUser.VoiceChannel.ModifyAsync(x =>
+                    if (newTopic.Length <= Config.bot.maxTopicNameLength)
                     {
-                        x.Name = vcName;
-                    });
-                    await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in voice {2}", callingUser.Mention, newTopic, oldvcName));
+                        string vcName = voiceChannelUserIn.Name;
+                        string oldvcName = RemoveTopicBracket(ref vcName) == false ? voiceChannelUserIn.Name : vcName;
 
+                        vcName += String.Format(" ({0})", newTopic);
+                        await callingUser.VoiceChannel.ModifyAsync(x =>
+                        {
+                            x.Name = vcName;
+                        });
+                        await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in {2}", callingUser.Mention, newTopic, oldvcName));
+                    }
+                    else {
+                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, the topic name is too long it needs to be less then {1} characters.", callingUser.Mention, Config.bot.maxTopicNameLength));
+                    }
                 }
                 else
                 {
@@ -176,7 +198,7 @@ namespace DiscordButlerBot.Commands
                     {
                         x.Name = vcName;
                     });
-                    await Context.Channel.SendMessageAsync( String.Format("Topic was removed Master {0} in voice {1}", callingUser.Mention, vcName));
+                    await Context.Channel.SendMessageAsync( String.Format("Master {0}, topic was removed in {1}", callingUser.Mention, vcName));
                 }
                 else
                 {

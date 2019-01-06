@@ -13,6 +13,7 @@ namespace DiscordButlerBot.Core
         public string token;
         public string cmdPrefix;
         public ulong serverID;
+        public int maxTopicNameLength; // TODO: allow for each voice in the list to have its own max number
     }
 
     class Config
@@ -40,8 +41,7 @@ namespace DiscordButlerBot.Core
             if (!File.Exists(configPath))
             {
                 bot = new BotInfo();
-                string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
-                File.WriteAllText(configPath, json);
+                SaveConfigFile();
             }
             else {
                 string json = File.ReadAllText(configPath);
@@ -73,6 +73,10 @@ namespace DiscordButlerBot.Core
         {            
             string json = JsonConvert.SerializeObject(voiceChannelIds, Formatting.Indented);
             File.WriteAllText(channelIdPath, json);
+        }
+        public static void SaveConfigFile() {
+            string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
+            File.WriteAllText(configPath, json);
         }
 
     }
