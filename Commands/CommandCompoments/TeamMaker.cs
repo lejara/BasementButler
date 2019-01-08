@@ -6,30 +6,28 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord;
+using Discord.WebSocket;
 
 
 namespace DiscordButlerBot.Commands.CommandCompoments
 {
-    public enum TeamMakingStages { empty, listing, made, move }
+    public enum TeamMakingStages { empty, listing, made, move, NeedForceMove }
     public class TeamMaker
     {
         public int numberOFTeams_;
+        public ulong defualtVoiceChannel_; //By defualt the first voice channel in our list is the defualt 
+        public TeamMakingStages currentStage_ = TeamMakingStages.empty;                      
+        public List<IGuildUser> guildUsersInVoice_;       
+        public List<Team> teams_; 
+        public List<IGuildChannel> avalChannels;
 
-        private static Random rng = new Random();   
-
-        public TeamMakingStages currentStage_ = TeamMakingStages.empty;
-
-        //By defualt the first voice channel in our list is the defualt
-        public ulong defualtVoiceChannel;
-
-        public List<IGuildUser> guildUsersInVoice_;
-        public List<Team> teams_;
+        private static Random rng = new Random();
 
         public TeamMaker() {
             currentStage_ = TeamMakingStages.empty;
             guildUsersInVoice_ = null;
             numberOFTeams_ = 0;
-            defualtVoiceChannel = Config.voiceChannelIds.FirstOrDefault();
+            defualtVoiceChannel_ = Config.voiceChannelIds.FirstOrDefault();
 
         }
 
@@ -128,6 +126,23 @@ namespace DiscordButlerBot.Commands.CommandCompoments
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+
+        //Returns a list of empty channels in the server, including the current channel the user is in.
+        public List<IGuildChannel> CheckGuildAvailableChannels(IReadOnlyCollection<SocketGuildChannel> guildChannels, SocketGuildChannel currentChannel ) {
+            avalChannels = new List<IGuildChannel>
+            {
+                currentChannel
+            };
+
+            foreach (var gChannel in guildChannels) {
+                
+                if (gChannel.Users.Count == 0 && Config.voiceChannelIds.Contains(gChannel.Id)) {
+                    avalChannels.Add(gChannel);
+                }
+            }
+            
+            return avalChannels;
         }
     }
 }
