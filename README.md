@@ -1,5 +1,7 @@
 # Basement Butler Bot
-A discord bot made for the server (The Basement)
+A discord bot made for the discord server The Basement
+
+***Note: the bot is coded to work on only one server per host. Mainly the !maketeams command. Multi server support is WIP***
 
 ## Commands
 - !commands - List useble commands
@@ -9,6 +11,7 @@ A discord bot made for the server (The Basement)
 - !vctopic (topic) - Adds a topic to the voice channel your currently in.
 - !rmvctopic - Removes the topic to the voice channel your currently in.
 - !listvoice - list all users in your current voice channel.
+- !??? - hidden command.
 
 ### Owner Only Commmnds
 - !welcome - mention everyone.
