@@ -133,12 +133,15 @@ namespace DiscordButlerBot.Commands
         {
             var user = Context.User as IGuildUser;
 
-            bool hasName = user.Nickname == null ? false : true;
+            bool hasNickName = user.Nickname == null ? false : true;
+            bool hasName = false;
             string username = user.Username.ToLower();
-            string nickname = user.Nickname.ToLower();
 
-            hasName = hasName ? nickname.Contains("nemu") : false;
-            
+            if (hasNickName) {
+                string nickname = user.Nickname.ToLower();
+                hasName = nickname.Contains("nemu");
+            }
+                      
             if (!(username.Contains("nemu") || hasName))
             {
                 await Context.Channel.SendMessageAsync("BAKA! *slaps you* ");
