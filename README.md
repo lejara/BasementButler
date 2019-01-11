@@ -1,7 +1,7 @@
 # Basement Butler Bot
 A discord bot made for the discord server The Basement
 
-***Note: this bot is coded to work on only one discord server per host. Mainly the !maketeams command. Full multi server support has yet to be implemented***
+***Note: this bot is coded to work on one discord server per host, mainly the !maketeams command. Full multi server support has yet to be implemented***
 
 ## Commands
 - !commands - List useble commands
