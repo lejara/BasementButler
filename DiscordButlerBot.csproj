@@ -129,7 +129,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Core\CommandBase.cs" />
     <Compile Include="Commands\CommandCompoments\Team.cs" />
     <Compile Include="Commands\CommandCompoments\TeamMaker.cs" />
     <Compile Include="Commands\MiscCommands.cs" />
@@ -137,6 +137,7 @@
     <Compile Include="Core\CommandHandler.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Program.cs" />
+    <Compile Include="Core\GuildServerData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -177,7 +177,7 @@ namespace DiscordButlerBot.Commands
                     await team.MoveUsers(Config.teamMakerInfo.defualtVoiceChannel_);
                 }
 
-                await Context.Channel.SendMessageAsync("");
+                await Context.Channel.SendMessageAsync("I have moved everyone back.");
             }
         }
     }

@@ -228,32 +228,32 @@ namespace DiscordButlerBot.Commands
         public async Task ListVoice()
         {
             var callingUser = Context.User as IGuildUser;
-            var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == Config.bot.serverID);
-            var voiceChannelUserIn = guild.Channels.FirstOrDefault(c => c.Id == callingUser.VoiceChannel.Id);
-
-            string listingReplyMsg = "";
-
-            var users = voiceChannelUserIn.Users;
-            string vcName = voiceChannelUserIn.Name;
-            RemoveTopicBracket(ref vcName);
-            EmbedBuilder em = new EmbedBuilder();
-            em.WithTitle("Members in Voice " + vcName);
-            em.WithColor(new Color(10, 10, 10));
-            em.WithFooter("");
-            foreach (var user in users)
+                        
+            if (callingUser.VoiceChannel != null)
             {
+                var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == Config.bot.serverID);
+                var voiceChannelUserIn = guild.Channels.FirstOrDefault(c => c.Id == callingUser.VoiceChannel.Id);
+                string listingReplyMsg = "";
 
-                var gUser = user as IGuildUser;
+                var users = voiceChannelUserIn.Users;
+                string vcName = voiceChannelUserIn.Name;
+                RemoveTopicBracket(ref vcName);
+                EmbedBuilder em = new EmbedBuilder();
+                em.WithTitle("Members in Voice " + vcName);
+                em.WithColor(new Color(10, 10, 10));
+                em.WithFooter("");
+                foreach (var user in users)
+                {
 
-                listingReplyMsg += "-" + user.Mention;
-                //if (user.Nickname != "" && user.Nickname != null)
-                //{
-                //    listingReplyMsg += " ( " + user.Nickname + " )";
-                //}
-                listingReplyMsg += "\n";
+                    listingReplyMsg += "-" + user.Mention;
+                    listingReplyMsg += "\n";
+                }
+                em.WithDescription(listingReplyMsg);
+                await Context.Channel.SendMessageAsync("Master " + callingUser.Mention + ", here is your list: \n", false, em);
             }
-            em.WithDescription(listingReplyMsg);
-            await Context.Channel.SendMessageAsync("Master " + callingUser.Mention + ", here is your list: \n", false, em);
+            else {
+                await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, you need to be in a voice channel to use this command.", Context.User.Mention));
+            }
 
         }
     }
