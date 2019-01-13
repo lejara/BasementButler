@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 using DiscordButlerBot.Commands.CommandCompoments;
 using Discord.WebSocket;
+using Discord;
 
 namespace DiscordButlerBot.Core
 {
@@ -24,6 +25,8 @@ namespace DiscordButlerBot.Core
 
         public TeamMaker teamMakerInfo_;
 
+        private List<IGuildChannel> avalChannels;
+
         public GuildServerData() {
             teamMakerInfo_ = new TeamMaker();
         }
@@ -33,6 +36,38 @@ namespace DiscordButlerBot.Core
             maxTopicNameLength = 8;
             teamMakerInfo_ = new TeamMaker();
             voiceChannelIds_ = new List<ulong>();
+        }
+
+        //Returns a list of empty channels in the guild, including the current channel the user is in.
+        public List<IGuildChannel> GetGuildAvailableChannels(IReadOnlyCollection<SocketGuildChannel> guildChannels, SocketGuildChannel currentChannel)
+        {
+            avalChannels = new List<IGuildChannel>
+            {
+                currentChannel
+            };
+
+            foreach (var gChannel in guildChannels)
+            {
+                if (gChannel.Users.Count == 0 && voiceChannelIds_.Contains(gChannel.Id))
+                {
+                    avalChannels.Add(gChannel);
+                }
+            }
+            return avalChannels;
+        }
+        //Returns a number of empty channels in the guild, including the current channel the user is in.
+        public int GetGuildAvailableChannelsCount(IReadOnlyCollection<SocketGuildChannel> guildChannels, SocketGuildChannel currentChannel)
+        {
+            int counter = 1;
+
+            foreach (var gChannel in guildChannels)
+            {
+                if (gChannel.Users.Count == 0 && voiceChannelIds_.Contains(gChannel.Id))
+                {
+                    counter++;
+                }
+            }
+            return counter;
         }
     }
 }

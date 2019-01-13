@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord;
+using Discord.WebSocket;
 using DiscordButlerBot.Commands.CommandCompoments;
 
 namespace DiscordButlerBot.Commands
@@ -18,27 +19,28 @@ namespace DiscordButlerBot.Commands
             int numberOFTeams = 0;
             if (Int32.TryParse(numOfTeams, out numberOFTeams))
             {
-                Config.teamMakerInfo.numberOFTeams_ = numberOFTeams;
+                var guildUser = Context.User as SocketGuildUser;
+                var voiceChannelUserIn = guildUser.VoiceChannel;
                 
-                var callingUser = Context.User as IGuildUser;                
-                var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == Config.bot.serverID);
-                var voiceChannelUserIn = guild.Channels.FirstOrDefault(c => c.Id == callingUser.VoiceChannel.Id);
-
+                //Set number of teams
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.numberOFTeams_ = numberOFTeams;
+                
                 //Set Default Channel
-                Config.teamMakerInfo.defualtVoiceChannel_ = voiceChannelUserIn.Id;
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.defualtVoiceChannel_ = voiceChannelUserIn.Id;
 
                 //Populate users
-                Config.teamMakerInfo.PopulateUsersInVoice(voiceChannelUserIn.Users);
-                
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.PopulateUsersInVoice(voiceChannelUserIn.Users);
+
                 //check if there is enough users for the number of teams
-                if (Config.teamMakerInfo.guildUsersInVoice_.Count >= numberOFTeams)
+                if (Config.serverData[guildUser.Guild.Id].teamMakerInfo_.guildUsersInVoice_.Count >= numberOFTeams)
                 {
+
                     //Output and list
                     string msg = "Master, here is your list of users that will be place into teams: \n";
-                    EmbedBuilder embed = Config.teamMakerInfo.ListUsersInVoiceEmbed();
+                    EmbedBuilder embed = Config.serverData[guildUser.Guild.Id].teamMakerInfo_.ListUsersInVoiceEmbed();
                     embed.WithTitle("Members to be in teams");
                     embed.WithFooter("Would you like to \"!MakeRandom\" the teams, or \"!exclude #\" a user?");
-                    Config.teamMakerInfo.currentStage_ = TeamMakingStages.listing;
+                    Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ = TeamMakingStages.listing;
 
                     await Context.Channel.SendMessageAsync(msg, false, embed);
                 }
@@ -54,16 +56,18 @@ namespace DiscordButlerBot.Commands
 
         [Command("exclude")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
-        public async Task ExcludeUser(string idx="") {           
+        public async Task ExcludeUser(string idx="") {
 
-            if (Config.teamMakerInfo.currentStage_ == TeamMakingStages.listing)
+            var guildUser = Context.User as SocketGuildUser;
+
+            if (Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ == TeamMakingStages.listing)
             {
                 int index = 0;
                 if (Int32.TryParse(idx, out index))
                 {
                     index--;
 
-                    var removingUser = Config.teamMakerInfo.guildUsersInVoice_.ElementAt(index);
+                    var removingUser = Config.serverData[guildUser.Guild.Id].teamMakerInfo_.guildUsersInVoice_.ElementAt(index);
 
                     if (removingUser == null)
                     {
@@ -71,24 +75,19 @@ namespace DiscordButlerBot.Commands
                     }
                     else
                     {
-                        if (Config.teamMakerInfo.guildUsersInVoice_.Count - 1 >= Config.teamMakerInfo.numberOFTeams_)
+                        if (Config.serverData[guildUser.Guild.Id].teamMakerInfo_.guildUsersInVoice_.Count - 1 >= Config.serverData[guildUser.Guild.Id].teamMakerInfo_.numberOFTeams_)
                         {
-                            Config.teamMakerInfo.guildUsersInVoice_.Remove(removingUser);
-                            string name = removingUser.Username;
+                            Config.serverData[guildUser.Guild.Id].teamMakerInfo_.guildUsersInVoice_.Remove(removingUser);
 
-                            if (removingUser.Nickname != "" && removingUser.Nickname != null)
-                            {
-                                name += " ( " + removingUser.Nickname + " )" + "\n";
-                            }
-
+                            string name = removingUser.Mention;
                             string msg = String.Format("I have removed \"{0}\" from the list. The new list is now: \n", name);
-                            EmbedBuilder embed = Config.teamMakerInfo.ListUsersInVoiceEmbed();
+                            EmbedBuilder embed = Config.serverData[guildUser.Guild.Id].teamMakerInfo_.ListUsersInVoiceEmbed();
                             embed.WithFooter("Would you like to \"!MakeRandom\" the teams, or again \"!exclude #\" a user?");
                             await Context.Channel.SendMessageAsync(msg, false, embed);
                         }
                         else {
                             await Context.Channel.SendMessageAsync(String.Format("Master {0}, there are now too few users to be in the teams you like now. Remake (!MakeTeams #).", Context.User.Mention));
-                            Config.teamMakerInfo.currentStage_ = TeamMakingStages.empty;
+                            Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ = TeamMakingStages.empty;
                         }
                     }
                 }
@@ -101,42 +100,42 @@ namespace DiscordButlerBot.Commands
         [Command("makerandom")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task MakeRandom() {
-            if (Config.teamMakerInfo.currentStage_ == TeamMakingStages.listing || 
-                Config.teamMakerInfo.currentStage_ >= TeamMakingStages.move ||
-                Config.teamMakerInfo.currentStage_ >= TeamMakingStages.NeedForceMove ||
-                Config.teamMakerInfo.currentStage_ == TeamMakingStages.made) {
 
-                Config.teamMakerInfo.ShuffleUsersInVoice();
-                Config.teamMakerInfo.AssignTeams();
+            var guildUser = Context.User as SocketGuildUser;
+
+            if (Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ == TeamMakingStages.listing || 
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ == TeamMakingStages.move ||
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ == TeamMakingStages.NeedForceMove ||
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ == TeamMakingStages.made) {
+
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.ShuffleUsersInVoice();
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.AssignTeams();
 
                 string msg = "";
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.WithColor(200, 0, 0);
                 embed.WithThumbnailUrl("https://cdn0.iconfinder.com/data/icons/sea-nautical-pirate-maritime/35/9-512.png");
-                foreach (var team in Config.teamMakerInfo.teams_) {
+                foreach (var team in Config.serverData[guildUser.Guild.Id].teamMakerInfo_.teams_) {
                     msg += team.GetStringMembersFormatted();
 
                 }
                 embed.WithDescription(msg);
 
-                var callingUser = Context.User as IGuildUser;
-                var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == Config.bot.serverID);
-                var voiceChannelUserIn = guild.Channels.FirstOrDefault(c => c.Id == callingUser.VoiceChannel.Id);
-
-                List<IGuildChannel> avalChannels = Config.teamMakerInfo.CheckGuildAvailableChannels(guild.Channels, voiceChannelUserIn);
-
-                //check if there enough voice channels for each teams
-                if (avalChannels.Count >= Config.teamMakerInfo.teams_.Count) {
+                var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == guildUser.Guild.Id);
+                var voiceChannelUserIn = guildUser.VoiceChannel;
+            
+                //check if theres enough voice channels for each teams
+                if (Config.serverData[guildUser.Guild.Id].GetGuildAvailableChannelsCount(guild.Channels, voiceChannelUserIn) >= Config.serverData[guildUser.Guild.Id].teamMakerInfo_.teams_.Count) {
                     embed.WithFooter("Would you like to \"!moveteams\" to different voice channels?");
-                    Config.teamMakerInfo.currentStage_ = TeamMakingStages.move;
+                    Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ = TeamMakingStages.move;
                 }
-                else if (Config.voiceChannelIds.Count >= Config.teamMakerInfo.teams_.Count)
+                else if (Config.serverData[guildUser.Guild.Id].voiceChannelIds_.Count >= Config.serverData[guildUser.Guild.Id].teamMakerInfo_.teams_.Count)
                 {
                     embed.WithFooter("Not enough empty channels, you can still force the move sir \"!moveteams force\". ");
-                    Config.teamMakerInfo.currentStage_ = TeamMakingStages.NeedForceMove;
+                    Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ = TeamMakingStages.move;
                 }
                 else {
-                    Config.teamMakerInfo.currentStage_ = TeamMakingStages.made;
+                    Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ = TeamMakingStages.made;
                     embed.WithFooter("Cannot move teams, not enough voice channels for each teams");
                 }
                 
@@ -148,35 +147,58 @@ namespace DiscordButlerBot.Commands
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task MoveTeams(string parm = "") {
 
-            if (Config.teamMakerInfo.currentStage_ == TeamMakingStages.move) {
+            var guildUser = Context.User as SocketGuildUser;
+
+            if (Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ == TeamMakingStages.move) {
+
                 int counter = 0;
-                foreach (var team in Config.teamMakerInfo.teams_) {
-                    await team.MoveUsers(Config.teamMakerInfo.avalChannels[counter].Id);
-                    counter++;
-                }
-                await Context.Channel.SendMessageAsync("Teams are now in their channels. You can \"!groupback\" to bring everyone together.");
-            }
-            else if (parm.Contains("force") && Config.teamMakerInfo.currentStage_ == TeamMakingStages.NeedForceMove) {
-                int counter = 0;
-                foreach (var team in Config.teamMakerInfo.teams_)
+                if (parm.ToLower().Contains("force"))
                 {
-                    await team.MoveUsers(Config.voiceChannelIds[counter]);
-                    counter++;
+                    //Move teams to different channels
+                    foreach (var team in Config.serverData[guildUser.Guild.Id].teamMakerInfo_.teams_)
+                    {
+                        await team.MoveUsers(Config.serverData[guildUser.Guild.Id].voiceChannelIds_[counter]);
+                        counter++;
+                    }
+                    await Context.Channel.SendMessageAsync("Teams are now in their channels. You can \"!groupback\" to bring everyone together.");
                 }
-                await Context.Channel.SendMessageAsync("Teams are now in their channels. You can \"!groupback\" to bring everyone together.");
+                else {
+                    //check the availability of voice channels again
+                    var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == guildUser.Guild.Id);
+                    var voiceChannelUserIn = guildUser.VoiceChannel;
+
+                    List<IGuildChannel> avalChannels = Config.serverData[guildUser.Guild.Id].GetGuildAvailableChannels(guild.Channels, voiceChannelUserIn);
+
+                    if (avalChannels.Count >= Config.serverData[guildUser.Guild.Id].teamMakerInfo_.teams_.Count)
+                    {
+                        //Move teams to different channels
+                        foreach (var team in Config.serverData[guildUser.Guild.Id].teamMakerInfo_.teams_)
+                        {
+                            await team.MoveUsers(avalChannels[counter].Id);
+                            counter++;
+                        }
+                        await Context.Channel.SendMessageAsync("Teams are now in their channels. You can \"!groupback\" to bring everyone together.");
+                    }
+                    else
+                    {
+                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, there are not enough empty channels anymore! You can \"!moveteams force\" or try again.", Context.User.Mention));
+                    }
+                }
             }
         }
 
         [Command("groupback")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task MoveBackTeams(){
-            if (Config.teamMakerInfo.currentStage_ == TeamMakingStages.move || Config.teamMakerInfo.currentStage_ == TeamMakingStages.NeedForceMove)
+
+            var guildUser = Context.User as SocketGuildUser;
+
+            if (Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ == TeamMakingStages.move || 
+                Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ == TeamMakingStages.NeedForceMove)
             {
-
-                foreach (var team in Config.teamMakerInfo.teams_) {
-                    await team.MoveUsers(Config.teamMakerInfo.defualtVoiceChannel_);
+                foreach (var team in Config.serverData[guildUser.Guild.Id].teamMakerInfo_.teams_) {
+                    await team.MoveUsers(Config.serverData[guildUser.Guild.Id].teamMakerInfo_.defualtVoiceChannel_);
                 }
-
                 await Context.Channel.SendMessageAsync("I have moved everyone back.");
             }
         }

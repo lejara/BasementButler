@@ -18,8 +18,7 @@ namespace DiscordButlerBot.Commands.CommandCompoments
         public ulong defualtVoiceChannel_; //By defualt the first voice channel in our list is the defualt 
         public TeamMakingStages currentStage_ = TeamMakingStages.empty;                      
         public List<IGuildUser> guildUsersInVoice_;       
-        public List<Team> teams_; 
-        public List<IGuildChannel> avalChannels;
+        public List<Team> teams_;         
 
         private static Random rng = new Random();
 
@@ -27,8 +26,6 @@ namespace DiscordButlerBot.Commands.CommandCompoments
             currentStage_ = TeamMakingStages.empty;
             guildUsersInVoice_ = null;
             numberOFTeams_ = 0;
-            defualtVoiceChannel_ = Config.voiceChannelIds.FirstOrDefault();
-
         }
 
         //Populate the guildUserInVoice_, everytime this method is called a new list will be created.        
@@ -126,23 +123,6 @@ namespace DiscordButlerBot.Commands.CommandCompoments
                 list[k] = list[n];
                 list[n] = value;
             }
-        }
-
-        //Returns a list of empty channels in the server, including the current channel the user is in.
-        public List<IGuildChannel> CheckGuildAvailableChannels(IReadOnlyCollection<SocketGuildChannel> guildChannels, SocketGuildChannel currentChannel ) {
-            avalChannels = new List<IGuildChannel>
-            {
-                currentChannel
-            };
-
-            foreach (var gChannel in guildChannels) {
-                
-                if (gChannel.Users.Count == 0 && Config.voiceChannelIds.Contains(gChannel.Id)) {
-                    avalChannels.Add(gChannel);
-                }
-            }
-            
-            return avalChannels;
         }
     }
 }
