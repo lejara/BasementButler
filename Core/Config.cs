@@ -13,8 +13,6 @@ namespace DiscordButlerBot.Core
     public struct BotInfo {
         public string token;
         public string cmdPrefix;
-        public ulong serverID;
-        public int maxTopicNameLength; //TODO: remove when mutli is implemented
     }
 
     class Config
@@ -29,12 +27,8 @@ namespace DiscordButlerBot.Core
         private readonly static string channelIdPath = configFolder + '/' + channelIdFile;
         private readonly static string serverDataPath = dataFolder + '/' + serverDataFile;
 
-        public static Dictionary<ulong, GuildServerData> serverData; // setup for multi server support, will use json to store it data.
-        public static BotInfo bot;
-        public static TeamMaker teamMakerInfo; //TODO: remove when mutli is implemented        
-        public static List<ulong> voiceChannelIds; //TODO: remove when mutli is implemented
-
-        
+        public static Dictionary<ulong, GuildServerData> serverData;
+        public static BotInfo bot;           
 
         //Load the BotConfig. creates if it does not exist
         static Config() {
@@ -59,16 +53,6 @@ namespace DiscordButlerBot.Core
 
             }
 
-            //Load or create channel ids file TODO: remove when mutli is implemented
-            if (!File.Exists(channelIdPath))
-            {
-                voiceChannelIds = new List<ulong>();
-                SaveChannelIds();
-            }
-            else {
-                LoadChannelIds();
-            }
-
             //Load or create server data  file
             if (!File.Exists(serverDataPath))
             {
@@ -79,19 +63,6 @@ namespace DiscordButlerBot.Core
             {
                 LoadServerData();
             }
-
-            teamMakerInfo = new TeamMaker();
-
-        }
-
-        public static void LoadChannelIds() { //TODO: remove when mutli is implemented
-            string json = File.ReadAllText(channelIdPath);
-            voiceChannelIds = JsonConvert.DeserializeObject<List<ulong>>(json);
-        }
-        public static void SaveChannelIds() //TODO: remove when mutli is implemented
-        {            
-            string json = JsonConvert.SerializeObject(voiceChannelIds, Formatting.Indented);
-            File.WriteAllText(channelIdPath, json);
         }
         public static void SaveConfigFile() {
             string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
