@@ -33,14 +33,15 @@ namespace DiscordButlerBot.Commands
         [RequireOwner]
         public async Task SetTopicLength(string num = "") {
             int newLength = 0;
+            var guildUser = Context.User as IGuildUser;
             if (Int32.TryParse(num, out newLength))
             {
-                Config.bot.maxTopicNameLength = newLength;
-                Config.SaveConfigFile();
-                await Context.Channel.SendMessageAsync(String.Format("I have set the topic length to {0} master.", Config.bot.maxTopicNameLength));
+                Config.serverData[guildUser.GuildId].maxTopicNameLength = newLength;
+                Config.SaveServerData();
+                await Context.Channel.SendMessageAsync(String.Format("I have set the topic length to {0} master.", Config.serverData[guildUser.GuildId].maxTopicNameLength));
             }
             else {
-                await Context.Channel.SendMessageAsync("Could not set topic new length");
+                await Context.Channel.SendMessageAsync("Could not set topic new length Parse failed");
             }
 
         }
@@ -48,18 +49,18 @@ namespace DiscordButlerBot.Commands
         [Command("addThisVChannel")]
         [RequireOwner]
         public async Task AddChannel() {
-            var callingUser = Context.User as IGuildUser;
-            var voiceChannelUserIn = callingUser.VoiceChannel;
+            var guildUser = Context.User as IGuildUser;
+            var voiceChannelUserIn = guildUser.VoiceChannel;
             if (voiceChannelUserIn != null)
             {
-                if (Config.voiceChannelIds.Contains(voiceChannelUserIn.Id))
+                if (Config.serverData[guildUser.GuildId].voiceChannelIds_.Contains(voiceChannelUserIn.Id))
                 {
                     await Context.Channel.SendMessageAsync("This channel is already in my list master");
                 }
                 else {
-                    Config.voiceChannelIds.Add(voiceChannelUserIn.Id);
+                    Config.serverData[guildUser.GuildId].voiceChannelIds_.Add(voiceChannelUserIn.Id);
                     await Context.Channel.SendMessageAsync("I have added " + voiceChannelUserIn.Name + " voice channel into my list");
-                    Config.SaveChannelIds();
+                    Config.SaveServerData();                    
                 }
             }
             else {
@@ -70,15 +71,15 @@ namespace DiscordButlerBot.Commands
         [RequireOwner]
         public async Task RemoveChannel()
         {
-            var callingUser = Context.User as IGuildUser;
-            var voiceChannelUserIn = callingUser.VoiceChannel;
+            var guildUser = Context.User as IGuildUser;
+            var voiceChannelUserIn = guildUser.VoiceChannel;
             if (voiceChannelUserIn != null)
             {
-                if (Config.voiceChannelIds.Contains(voiceChannelUserIn.Id))
+                if (Config.serverData[guildUser.GuildId].voiceChannelIds_.Contains(voiceChannelUserIn.Id))
                 {
-                    Config.voiceChannelIds.Remove(voiceChannelUserIn.Id);
+                    Config.serverData[guildUser.GuildId].voiceChannelIds_.Remove(voiceChannelUserIn.Id);
                     await Context.Channel.SendMessageAsync("I have removed " + voiceChannelUserIn.Name + " from my list");
-                    Config.SaveChannelIds();
+                    Config.SaveServerData();
                 }
                 else
                 {
@@ -155,26 +156,26 @@ namespace DiscordButlerBot.Commands
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task SetVCTopic([Remainder] string newTopic = "") {
             
-            var callingUser = Context.User as IGuildUser;
-            var voiceChannelUserIn = callingUser.VoiceChannel;
+            var guildUser = Context.User as IGuildUser;
+            var voiceChannelUserIn = guildUser.VoiceChannel;
             if (voiceChannelUserIn != null)
             {
                 if (newTopic != null && newTopic != "")
                 {
-                    if (newTopic.Length <= Config.bot.maxTopicNameLength)
+                    if (newTopic.Length <= Config.serverData[guildUser.GuildId].maxTopicNameLength)
                     {
                         string vcName = voiceChannelUserIn.Name;
                         string oldvcName = RemoveTopicBracket(ref vcName) == false ? voiceChannelUserIn.Name : vcName;
 
                         vcName += String.Format(" ({0})", newTopic);
-                        await callingUser.VoiceChannel.ModifyAsync(x =>
+                        await guildUser.VoiceChannel.ModifyAsync(x =>
                         {
                             x.Name = vcName;
                         });
-                        await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in {2}", callingUser.Mention, newTopic, oldvcName));
+                        await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in {2}", guildUser.Mention, newTopic, oldvcName));
                     }
                     else {
-                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, the topic name is too long it needs to be less than {1} characters.", callingUser.Mention, Config.bot.maxTopicNameLength));
+                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, the topic name is too long it needs to be less than {1} characters.", guildUser.Mention, Config.serverData[guildUser.GuildId].maxTopicNameLength));
                     }
                 }
                 else
@@ -183,7 +184,7 @@ namespace DiscordButlerBot.Commands
                 }
             }
             else {
-                await Context.Channel.SendMessageAsync(String.Format("Master {0}, you need to be in a voice channel to set a topic!", callingUser.Mention));
+                await Context.Channel.SendMessageAsync(String.Format("Master {0}, you need to be in a voice channel to set a topic!", guildUser.Mention));
             }
         }
         [Command("rmvctopic")]
@@ -227,12 +228,11 @@ namespace DiscordButlerBot.Commands
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task ListVoice()
         {
-            var callingUser = Context.User as IGuildUser;
-                        
-            if (callingUser.VoiceChannel != null)
+            var guildUser = Context.User as SocketGuildUser;
+            var voiceChannelUserIn = guildUser.VoiceChannel;
+
+            if (guildUser.VoiceChannel != null)
             {
-                var guild = Context.Client.Guilds.FirstOrDefault(g => g.Id == Config.bot.serverID);
-                var voiceChannelUserIn = guild.Channels.FirstOrDefault(c => c.Id == callingUser.VoiceChannel.Id);
                 string listingReplyMsg = "";
 
                 var users = voiceChannelUserIn.Users;
@@ -249,7 +249,7 @@ namespace DiscordButlerBot.Commands
                     listingReplyMsg += "\n";
                 }
                 em.WithDescription(listingReplyMsg);
-                await Context.Channel.SendMessageAsync("Master " + callingUser.Mention + ", here is your list: \n", false, em);
+                await Context.Channel.SendMessageAsync("Master " + guildUser.Mention + ", here is your list: \n", false, em);
             }
             else {
                 await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, you need to be in a voice channel to use this command.", Context.User.Mention));

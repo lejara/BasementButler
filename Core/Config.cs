@@ -103,9 +103,10 @@ namespace DiscordButlerBot.Core
             serverData = JsonConvert.DeserializeObject<Dictionary<ulong, GuildServerData>>(json);
         }
         public static void SaveServerData()
-        {
+        {            
             string json = JsonConvert.SerializeObject(serverData, Formatting.Indented);
             File.WriteAllText(serverDataPath, json);
+            Console.WriteLine("Saved ServerData");
         }
     }
 }
