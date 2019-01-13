@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using DiscordButlerBot.Commands.CommandCompoments;
+using Discord.WebSocket;
 
 namespace DiscordButlerBot.Core
 {
@@ -28,10 +29,12 @@ namespace DiscordButlerBot.Core
         private readonly static string channelIdPath = configFolder + '/' + channelIdFile;
         private readonly static string serverDataPath = dataFolder + '/' + serverDataFile;
 
-        public static List<ulong> voiceChannelIds; //TODO: remove when mutli is implemented
-        public static TeamMaker teamMakerInfo; //TODO: remove when mutli is implemented
+        public static Dictionary<ulong, GuildServerData> serverData; // setup for multi server support, will use json to store it data.
         public static BotInfo bot;
-        public static List<GuildServerData> serverData; // setup for multi server support, will use json to store it data.
+        public static TeamMaker teamMakerInfo; //TODO: remove when mutli is implemented        
+        public static List<ulong> voiceChannelIds; //TODO: remove when mutli is implemented
+
+        
 
         //Load the BotConfig. creates if it does not exist
         static Config() {
@@ -69,7 +72,7 @@ namespace DiscordButlerBot.Core
             //Load or create server data  file
             if (!File.Exists(serverDataPath))
             {
-                serverData = new List<GuildServerData>();
+                serverData = new Dictionary<ulong, GuildServerData>();
                 SaveServerData();
             }
             else
@@ -97,7 +100,7 @@ namespace DiscordButlerBot.Core
         public static void LoadServerData()
         {
             string json = File.ReadAllText(serverDataPath);
-            serverData = JsonConvert.DeserializeObject<List<GuildServerData>>(json);
+            serverData = JsonConvert.DeserializeObject<Dictionary<ulong, GuildServerData>>(json);
         }
         public static void SaveServerData()
         {
@@ -106,3 +109,4 @@ namespace DiscordButlerBot.Core
         }
     }
 }
+
