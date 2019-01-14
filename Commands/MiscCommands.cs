@@ -213,17 +213,6 @@ namespace DiscordButlerBot.Commands
                 await Context.Channel.SendMessageAsync(String.Format("Master {0}, you need to be in a voice channel to clear a topic", callingUser.Mention));
             }
         }
-        //Returns a changed ref of a string, returns flase if brackets did not exist
-        bool RemoveTopicBracket(ref string name) {
-            bool hasRemoved = false;
-            int index = name.IndexOf("(");
-            if (index != -1)
-            {
-                name = name.Remove(index - 1);
-                hasRemoved = true;
-            }
-            return hasRemoved;
-        }
         [Command("listvoice")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task ListVoice()

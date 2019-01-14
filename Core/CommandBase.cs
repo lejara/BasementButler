@@ -13,7 +13,7 @@ namespace DiscordButlerBot.Commands
     public abstract class CommandBase : ModuleBase<SocketCommandContext>
     {
         //Gets the user's full name or nickname
-        public string GetName()
+        protected string GetName()
         {
             var user = Context.User as IGuildUser;
             string username = Context.User.Username;
@@ -22,6 +22,19 @@ namespace DiscordButlerBot.Commands
                 username = user.Nickname;
             }
             return username;
+        }
+
+        //Returns a changed ref of a string, returns flase if brackets did not exist
+        protected bool RemoveTopicBracket(ref string name)
+        {
+            bool hasRemoved = false;
+            int index = name.IndexOf("(");
+            if (index != -1)
+            {
+                name = name.Remove(index - 1);
+                hasRemoved = true;
+            }
+            return hasRemoved;
         }
     }
 }
