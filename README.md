@@ -9,6 +9,7 @@ A discord bot made for the discord server The Basement
 - !vctopic (topic) - Adds a topic to the voice channel your currently in.
 - !rmvctopic - Removes the topic to the voice channel your currently in.
 - !listvoice - list all users in your current voice channel.
+- !stepout (@mention) - disconnects the target user from voice chat.
 - !??? - hidden command.
 
 ### Owner Only Commmnds

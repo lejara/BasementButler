@@ -105,7 +105,8 @@ namespace DiscordButlerBot.Commands
                 "!maketeams # - Orgainzes a team from voice chat, and can escort teams to different voice channels.\n\n" +
                 "!vctopic (topic) - Adds a topic to the voice channel your currently in.\n\n" +
                 "!rmvctopic - Removes the topic to the voice channel your currently in.\n\n" +
-                "!listvoice - list all users in your current voice channel." +
+                "!listvoice - list all users in your current voice channel.\n\n" +
+                "!stepout (@mention) - disconnects the target user from voice chat" +
                 "```";
             await Context.Channel.SendMessageAsync(msg);
         }
@@ -212,6 +213,40 @@ namespace DiscordButlerBot.Commands
             else {
                 await Context.Channel.SendMessageAsync(String.Format("Master {0}, you need to be in a voice channel to clear a topic", callingUser.Mention));
             }
+        }
+        [Command("stepout")]
+        [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
+        public async Task KickUser(string mentionName = "") {
+            if (mentionName != "")
+            {
+                var guildUser = Context.User as SocketGuildUser;
+                var guild = Context.Guild;
+
+                SocketGuildUser removingUser = null;
+                foreach (var channel in guild.VoiceChannels)
+                {
+                    removingUser = channel.Users.FirstOrDefault(u => u.Mention.Substring(3).Contains(mentionName.Substring(2)));
+                    if (removingUser != null)
+                    {
+                        break;
+                    }
+                }
+                if (removingUser != null)
+                {
+                    var vc = await guildUser.Guild.CreateVoiceChannelAsync("Expelling...");
+                    await removingUser.ModifyAsync(x => x.ChannelId = vc.Id);
+                    await vc.DeleteAsync();
+                    await Context.Channel.SendMessageAsync(String.Format("The user is now gone"));
+                }
+                else
+                {
+                    await Context.Channel.SendMessageAsync(String.Format("Master {0}, I could not find the user. \"!stepout (@mention)\" ", Context.User.Mention));
+                }
+            }
+            else {
+                await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, you need to metion a name. \"!stepout (@mention)\" ", Context.User.Mention));
+            }
+
         }
         [Command("listvoice")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
