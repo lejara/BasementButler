@@ -36,5 +36,10 @@ namespace DiscordButlerBot.Commands
             }
             return hasRemoved;
         }
+
+        protected string RemoveChannelNameFirstWord(string s, ulong serverId) {
+            Config.serverData[serverId].firstWordTitle_ = s.Substring(0, s.IndexOf(' ') + 1);
+            return s.Substring(s.IndexOf(' ') + 1);
+        }
     }
 }

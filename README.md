@@ -14,6 +14,7 @@ A discord bot made for the discord server The Basement
 
 ### Owner Only Commmnds
 - !welcome - mention everyone.
-- !setTopicLength - use for limiting the ammount of characters for vctopic command.
+- !setTopicLength  (int) - use for limiting the ammount of characters for vctopic command.
+- !setRemoveFirstWord (bool) - if true, will remove the first word of a channel only when a topic is set.
 - !addThisVChannel - add useble voice channels for maketeams command.
 - !removeThisVChannel remove useble voice channels for maketeams command.

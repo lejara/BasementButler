@@ -12,7 +12,6 @@ namespace DiscordButlerBot.Commands
 {
     public class MiscCommands : CommandBase
     {
-
         //Owner Only commands----------------------------------------------------------
         [Command("welcome")]
         [RequireOwner]
@@ -26,8 +25,7 @@ namespace DiscordButlerBot.Commands
                     await Context.Channel.SendMessageAsync(role.Mention);
                 }
 
-            }
-            
+            }            
         }
         [Command("setTopicLength")]
         [RequireOwner]
@@ -36,16 +34,35 @@ namespace DiscordButlerBot.Commands
             var guildUser = Context.User as IGuildUser;
             if (Int32.TryParse(num, out newLength))
             {
-                Config.serverData[guildUser.GuildId].maxTopicNameLength = newLength;
+                Config.serverData[guildUser.GuildId].maxTopicNameLength_ = newLength;
                 Config.SaveServerData();
-                await Context.Channel.SendMessageAsync(String.Format("I have set the topic length to {0} master.", Config.serverData[guildUser.GuildId].maxTopicNameLength));
+                await Context.Channel.SendMessageAsync(String.Format("I have set the topic length to {0} master.", Config.serverData[guildUser.GuildId].maxTopicNameLength_));
             }
             else {
                 await Context.Channel.SendMessageAsync("Could not set topic new length Parse failed");
             }
 
         }
-
+        [Command("setRemoveFirstWord")]
+        [RequireOwner]
+        public async Task SetBoolFirstWord(string p = "") {
+            var guildUser = Context.User as IGuildUser;
+            if (p.ToLower().Contains("true"))
+            {
+                Config.serverData[guildUser.GuildId].removeFirstWord_ = true;
+                await Context.Channel.SendMessageAsync("Removal of first word in topic vc is now " + Config.serverData[guildUser.GuildId].removeFirstWord_);
+                Config.SaveServerData();
+            }
+            else if (p.ToLower().Contains("false"))
+            {
+                Config.serverData[guildUser.GuildId].removeFirstWord_ = false;
+                await Context.Channel.SendMessageAsync("Removal of first word in topic vc is now " + Config.serverData[guildUser.GuildId].removeFirstWord_);
+                Config.SaveServerData();
+            }
+            else {
+                await Context.Channel.SendMessageAsync("Could not set bool. \"!setRemoveFirstWord (bool)\"");
+            }            
+        }
         [Command("addThisVChannel")]
         [RequireOwner]
         public async Task AddChannel() {
@@ -91,8 +108,8 @@ namespace DiscordButlerBot.Commands
                 await Context.Channel.SendMessageAsync("Sorry master you need to be in a voice channel for this work");
             }
         }
-        //------------------------------------------------------------------
 
+        //------------------------------------------------------------------
 
         [Command("commands")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
@@ -126,8 +143,7 @@ namespace DiscordButlerBot.Commands
             }
             else {
                 await Context.Channel.SendMessageAsync(String.Format("Master {0}, what drink would you like? (!getdrink (name)) ", GetName()));
-            }
-            
+            }            
         }
         [Command("lewd")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
@@ -150,8 +166,7 @@ namespace DiscordButlerBot.Commands
             }
             else {
                 await Context.Channel.SendMessageAsync(String.Format("AAAAHH~!! YES SENPAIIII <3~~~ {0}", Context.User.Mention));
-            }
-            
+            }            
         }
         [Command("vctopic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
@@ -163,20 +178,31 @@ namespace DiscordButlerBot.Commands
             {
                 if (newTopic != null && newTopic != "")
                 {
-                    if (newTopic.Length <= Config.serverData[guildUser.GuildId].maxTopicNameLength)
+                    if (newTopic.Length <= Config.serverData[guildUser.GuildId].maxTopicNameLength_)
                     {
-                        string vcName = voiceChannelUserIn.Name;
-                        string oldvcName = RemoveTopicBracket(ref vcName) == false ? voiceChannelUserIn.Name : vcName;
+                        string vcName;
+
+                        //remove first word if true
+                        if (Config.serverData[guildUser.GuildId].removeFirstWord_ && Config.serverData[guildUser.GuildId].firstWordTitle_ == "")
+                        {
+                            vcName = RemoveChannelNameFirstWord(voiceChannelUserIn.Name, guildUser.GuildId);
+                        }
+                        else {
+                            vcName = voiceChannelUserIn.Name;
+                        }                       
+
+                        string vcNameNoTopic = RemoveTopicBracket(ref vcName) == false ? voiceChannelUserIn.Name : vcName;
 
                         vcName += String.Format(" ({0})", newTopic);
                         await guildUser.VoiceChannel.ModifyAsync(x =>
                         {
                             x.Name = vcName;
                         });
-                        await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in {2}", guildUser.Mention, newTopic, oldvcName));
+                        await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in {2}", 
+                            guildUser.Mention, newTopic, String.Format("{0}{1}", Config.serverData[guildUser.GuildId].firstWordTitle_, vcNameNoTopic)));
                     }
                     else {
-                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, the topic name is too long it needs to be less than {1} characters.", guildUser.Mention, Config.serverData[guildUser.GuildId].maxTopicNameLength));
+                        await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, the topic name is too long it needs to be less than {1} characters.", guildUser.Mention, Config.serverData[guildUser.GuildId].maxTopicNameLength_));
                     }
                 }
                 else
@@ -199,6 +225,11 @@ namespace DiscordButlerBot.Commands
             {
                 if (RemoveTopicBracket(ref vcName))
                 {
+                    if (Config.serverData[callingUser.GuildId].removeFirstWord_) {
+                        vcName = String.Format("{0}{1}", Config.serverData[callingUser.GuildId].firstWordTitle_, vcName);
+                        Config.serverData[callingUser.GuildId].firstWordTitle_ = "";
+                    }
+
                     await callingUser.VoiceChannel.ModifyAsync(x =>
                     {
                         x.Name = vcName;

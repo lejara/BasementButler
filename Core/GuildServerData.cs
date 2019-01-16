@@ -19,21 +19,26 @@ namespace DiscordButlerBot.Core
         [JsonProperty]
         public string serverName_;
         [JsonProperty]
-        public int maxTopicNameLength;
+        public int maxTopicNameLength_;
+        [JsonProperty]
+        public bool removeFirstWord_;
         [JsonProperty]
         public List<ulong> voiceChannelIds_;
-
+        
+        public string firstWordTitle_;
         public TeamMaker teamMakerInfo_;
-
         private List<IGuildChannel> avalChannels;
 
         public GuildServerData() {
-            teamMakerInfo_ = new TeamMaker();
+            firstWordTitle_ = "";
+            teamMakerInfo_ = new TeamMaker();            
         }
         public GuildServerData(SocketGuild g) {
             serverName_ = g.Name;
             id_ = g.Id;
-            maxTopicNameLength = 8;
+            maxTopicNameLength_ = 16;
+            removeFirstWord_ = false;
+            firstWordTitle_ = "";
             teamMakerInfo_ = new TeamMaker();
             voiceChannelIds_ = new List<ulong>();
         }
