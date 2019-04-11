@@ -8,6 +8,7 @@ using Discord.Commands;
 using Discord;
 using Discord.WebSocket;
 
+
 namespace DiscordButlerBot.Commands
 {
     public class MiscCommands : CommandBase
@@ -310,6 +311,14 @@ namespace DiscordButlerBot.Commands
                 await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, you need to be in a voice channel to use this command.", Context.User.Mention));
             }
 
+        }
+        [Command("getMeme")]
+        [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
+        public async Task GetMeme()
+        {
+            string output = Run_Python("MemeGetter.exe");
+
+            await Context.Channel.SendMessageAsync(String.Format(output + System.IO.Directory.GetCurrentDirectory()));
         }
     }
 }

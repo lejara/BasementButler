@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord;
-
+using System.Diagnostics; // Process
+using System.IO; // StreamWriter
 
 namespace DiscordButlerBot.Commands
 {
@@ -41,5 +42,28 @@ namespace DiscordButlerBot.Commands
             Config.serverData[serverId].firstWordTitle_ = s.Substring(0, s.IndexOf(' ') + 1);
             return s.Substring(s.IndexOf(' ') + 1);
         }
+
+        protected string Run_Python(string exe, string args = null)
+        {
+            string output;
+
+            Process p = new Process(); // create process (i.e., the python program
+            p.StartInfo.FileName = exe;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.UseShellExecute = false; // make sure we can read the output from stdout
+            //p.StartInfo.Arguments = "c:\\kudos\\test2.py " + a + " " + b; // start the python program with two parameters
+            p.Start(); // start the process (the python program)
+            StreamReader s = p.StandardOutput;
+            output = s.ReadToEnd();
+            string[] r = output.Split(new char[] { ' ' }); // get the parameter
+            Console.WriteLine(r[0]);
+            p.WaitForExit();
+
+
+
+            return output;
+        }
+
+
     }
 }
