@@ -24,12 +24,14 @@ def FourChanSFSMemes(link):
 
     for thread in threads:
         imgLink = "http:" + thread.find("a", {"class" : "fileThumb"})['href']
-        messageThread = thread.find("blockquote", {'class' : 'postMessage'})
-        messagePost = " " + messageThread.find(text=True, recursive=False)
+        messageThread = thread.find("blockquote", {'class' : 'postMessage'}).find(text=True, recursive=False)
         # span = messageThread.find("span") #not working idk, too tired rn
         # if span != None:
         #     messagePost = " ||" + span.text + "||"
-        imgs[imgLink] = messagePost
+        if messageThread == None:
+            imgs[imgLink] = ""
+        else:
+            imgs[imgLink] = " " + messageThread
 
     randomIndex = random.randrange(0, len(imgs))
     print(list(imgs.keys())[randomIndex] + list(imgs.values())[randomIndex])

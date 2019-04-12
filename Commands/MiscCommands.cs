@@ -125,7 +125,7 @@ namespace DiscordButlerBot.Commands
                 "!rmvctopic - Removes the topic to the voice channel your currently in.\n\n" +
                 "!listvoice - list all users in your current voice channel.\n\n" +
                 "!stepout (@mention) - disconnects the target user from voice chat\n\n" +
-                "!meme - Will show u a meme pic. (4chan is W.I.P)" +
+                "!meme - Will show u a meme picture. (4chan is W.I.P). Small chance of something......" +
                 "```";
             await Context.Channel.SendMessageAsync(msg);
         }
