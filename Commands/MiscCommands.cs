@@ -125,7 +125,7 @@ namespace DiscordButlerBot.Commands
                 "!rmvctopic - Removes the topic to the voice channel your currently in.\n\n" +
                 "!listvoice - list all users in your current voice channel.\n\n" +
                 "!stepout (@mention) - disconnects the target user from voice chat\n\n" +
-                "!meme - Will show u a meme picture. (4chan is W.I.P). Small chance of something......" +
+                "!meme (keyword) - Will give you picture of a meme. Has a small chance of #%#@" +
                 "```";
             await Context.Channel.SendMessageAsync(msg);
         }
@@ -315,11 +315,17 @@ namespace DiscordButlerBot.Commands
         }
         [Command("meme")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
-        public async Task GetMeme()
+        public async Task GetMeme([Remainder] string keyword = "")
         {
-            string output = Run_Python("MemeGetter.py");
-
-            await Context.Channel.SendMessageAsync(output);
+            string output = Run_Python("MemeGetter.py", keyword);
+            if (output == "") {
+                await Context.Channel.SendMessageAsync("No meme found : (");
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync(output);
+            }
+            
         }
     }
 }

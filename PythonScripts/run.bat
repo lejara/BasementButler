@@ -1,0 +1,3 @@
+python MemeGetter.py
+
+pause
