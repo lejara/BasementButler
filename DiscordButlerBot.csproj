@@ -146,6 +146,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>Copy /Y "$(ProjectDir)\PythonScripts\MemeGetter.py" "$(TargetDir)"</PreBuildEvent>
+    <PreBuildEvent>xcopy /y  "$(ProjectDir)\PythonScripts\MemeGetter.py" "$(TargetDir)"</PreBuildEvent>
   </PropertyGroup>
 </Project>
