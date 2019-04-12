@@ -43,15 +43,15 @@ namespace DiscordButlerBot.Commands
             return s.Substring(s.IndexOf(' ') + 1);
         }
 
-        protected string Run_Python(string exe, string args = null)
+        protected string Run_Python(string scriptpy, string args = null)
         {
             string output;
 
             Process p = new Process(); // create process (i.e., the python program
-            p.StartInfo.FileName = exe;
+            p.StartInfo.FileName = "python.exe";
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.UseShellExecute = false; // make sure we can read the output from stdout
-            //p.StartInfo.Arguments = "c:\\kudos\\test2.py " + a + " " + b; // start the python program with two parameters
+            p.StartInfo.Arguments = scriptpy; // start the python program with two parameters
             p.Start(); // start the process (the python program)
             StreamReader s = p.StandardOutput;
             output = s.ReadToEnd();
