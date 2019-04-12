@@ -10,6 +10,7 @@ A discord bot made for the discord server The Basement
 - !rmvctopic - Removes the topic to the voice channel your currently in.
 - !listvoice - list all users in your current voice channel.
 - !stepout (@mention) - disconnects the target user from voice chat.
+- !meme - Will show you a meme picture.
 - !??? - hidden command.
 
 ### Owner Only Commmnds
