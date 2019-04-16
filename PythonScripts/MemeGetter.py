@@ -1,3 +1,11 @@
+"""
+Gets a single image url and print it, may include text if from 4chan random pick.
+Sources currently are 4chan and reddit.
+
+Author: Lejara
+
+"""
+
 from bs4 import BeautifulSoup
 import requests
 import random
@@ -10,9 +18,10 @@ def GetRedditDankMemes(link):
                      client_secret='vKkHdmjobRKjj4K6aNEfzqGwS8U',
                      user_agent='Windows MemeBot by /u/ leoleojar')
     memeImg = []
-    for submission in reddit.subreddit('dankmemes').hot(limit=45):
+    for submission in reddit.subreddit('dankmemes').hot(limit=55):
         if not submission.is_self:
             memeImg.append(submission.url)
+
     print(memeImg[random.randrange(0, len(memeImg))])
 
 
@@ -20,26 +29,19 @@ def FourChanSFSMemes(link):
     memePage = requests.get(link)
     soup_shop = BeautifulSoup(memePage.content, "html5lib")
 
-    imgs = {}
+    imgs = []
     threads = soup_shop.find_all("div", {"class" : "thread"})
 
     for thread in threads:
         imgLink = "http:" + thread.find("a", {"class" : "fileThumb"})['href']
-        messageThread = thread.find("blockquote", {'class' : 'postMessage'}).find(text=True, recursive=False)
-        # span = messageThread.find("span") #not working idk, too tired rn
-        # if span != None:
-        #     messagePost = " ||" + span.text + "||"
-        if messageThread == None:
-            imgs[imgLink] = ""
-        else:
-            imgs[imgLink] = " " + messageThread
+        imgs.append(imgLink)
 
-    randomIndex = random.randrange(0, len(imgs))
-    print(list(imgs.keys())[randomIndex] + list(imgs.values())[randomIndex])
+    if len(imgs) != 0:
+        print(imgs[random.randrange(0, len(imgs))])
 
 
-def FourChanKeywordSearch(keyword):
-    searchPage = requests.get(f'https://find.4chan.org/api?q={keyword}')
+def FourChanKeywordSearch(keyword, current_poll_ammount = 0):
+    searchPage = requests.get(f'https://find.4chan.org/api?q={keyword}&o={current_poll_ammount}')
     dict = searchPage.json()
     contents = []
     for thread in dict['threads']:
@@ -54,8 +56,11 @@ def FourChanKeywordSearch(keyword):
             contentLink = f'http://i.4cdn.org/{board}/{time}{sExt}{ext}'
             contents.append(contentLink)
 
-    randomIndex = random.randrange(0, len(contents))
-    print(contents[randomIndex])
+    if len(contents) != 0:
+        randomIndex = random.randrange(0, len(contents))
+        print(contents[randomIndex])
+    else:
+        FourChanKeywordSearch(keyword, current_poll_ammount + 10) #recall if nothing is found
 
 def RedditSearchKeyword(keyword):
         reddit = praw.Reddit(client_id='LzijuOQxVi7TRA',
@@ -63,14 +68,15 @@ def RedditSearchKeyword(keyword):
                          user_agent='Windows MemeBot by /u/ leoleojar')
         subs = reddit.subreddit('all')
         contents = []
-        for sub in subs.search(keyword, limit=65, params={'include_over_18': 'on'}):
+        for sub in subs.search(keyword, limit=80, params={'include_over_18': 'on'}):
             if not sub.is_self:
                 splits = sub.url.split('/')
                 end = splits[len(splits) - 1]
                 if end.find(".")  != -1:
                     contents.append(sub.url)
 
-        print(contents[random.randrange(0, len(contents))])
+        if len(contents) != 0:
+            print(contents[random.randrange(0, len(contents))])
 
 memeRepoRandom = {
     "No Link": GetRedditDankMemes,
@@ -96,5 +102,7 @@ if len(sys.argv) > 1:
     RandomKeyword_Pick(str(sys.argv[1]))
 else:
     # RandomKeyword_Pick("fun")
-    # RedditSearchKeyword("fun")
+    #FourChanKeywordSearch("fun")
+    # RedditSearchKeyword("cookies")
+    # FourChanSFSMemes("http://boards.4chan.org/s4s/")
     Random_Pick()

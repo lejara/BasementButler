@@ -16,7 +16,7 @@ namespace DiscordButlerBot
     {
         public static double versionMajor = 2;
         public static double versionMinor = 1; 
-        public static double versionPatch = 1; 
+        public static double versionPatch = 2; 
 
         public DiscordSocketClient client_;
         public CommandHandler handler_;
@@ -28,7 +28,7 @@ namespace DiscordButlerBot
 
             //Init
             if (Config.bot.token != "" && Config.bot.token != null) {
-                Console.WriteLine(String.Format("-------- DiscordButlerBot Ver: {0}.{1}.{2} --------", versionMajor, versionMinor, versionPatch));
+                Console.WriteLine(String.Format("----<>---- DiscordButlerBot Ver: {0}.{1}.{2} ----<>----", versionMajor, versionMinor, versionPatch));
                 Console.WriteLine("Made By: Lejara");
                 //Init REST socket
                 client_ = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose });
