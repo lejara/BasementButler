@@ -59,8 +59,6 @@ def FourChanKeywordSearch(keyword, current_poll_ammount = 0):
     if len(contents) != 0:
         randomIndex = random.randrange(0, len(contents))
         print(contents[randomIndex])
-    else:
-        FourChanKeywordSearch(keyword, current_poll_ammount + 10) #recall if nothing is found
 
 def RedditSearchKeyword(keyword):
         reddit = praw.Reddit(client_id='LzijuOQxVi7TRA',
@@ -102,7 +100,7 @@ if len(sys.argv) > 1:
     RandomKeyword_Pick(str(sys.argv[1]))
 else:
     # RandomKeyword_Pick("fun")
-    #FourChanKeywordSearch("fun")
+    # FourChanKeywordSearch("leption")
     # RedditSearchKeyword("cookies")
     # FourChanSFSMemes("http://boards.4chan.org/s4s/")
     Random_Pick()
