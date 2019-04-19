@@ -1,6 +1,8 @@
 # Basement Butler Bot
 A discord bot made for the discord server The Basement
 
+Made by: Lejara (Leonel Jara)
+
 ## Commands
 - !commands - List useble commands
 - !hi - Say hi
