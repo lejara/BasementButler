@@ -25,6 +25,9 @@ Made by: Lejara (Leonel Jara)
 ### Setup
 
 1. Fill out ConfigCore/BotConfig/json
+
     -Add Your Discord Bot Token, you get your token at https://discordapp.com/developers/applications/
+    
     -Add Your Command Prefix
+    
 2. Run DiscordButlerBot.exe
