@@ -316,14 +316,17 @@ namespace DiscordButlerBot.Commands
         [Command("meme")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task GetMeme([Remainder] string keyword = "")
-        {
+        {            
             string output = Run_Python("MemeGetter.py", keyword);
             if (output == "") {
                 await Context.Channel.SendMessageAsync("No meme found : (");
             }
             else
             {
-                await Context.Channel.SendMessageAsync(output);
+                EmbedBuilder embed = new EmbedBuilder();
+
+                embed.ImageUrl = output;
+                await Context.Channel.SendMessageAsync("", false, embed);
             }
             
         }

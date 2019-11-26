@@ -130,10 +130,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\CommandBase.cs" />
-    <Compile Include="Commands\CommandCompoments\Team.cs" />
-    <Compile Include="Commands\CommandCompoments\TeamMaker.cs" />
+    <Compile Include="Commands\TeamsCommand\Team.cs" />
+    <Compile Include="Commands\TeamsCommand\TeamMaker.cs" />
     <Compile Include="Commands\MiscCommands.cs" />
-    <Compile Include="Commands\TeamMakerCommands.cs" />
+    <Compile Include="Commands\TeamsCommand\TeamMakerCommands.cs" />
     <Compile Include="Core\CommandHandler.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Program.cs" />
