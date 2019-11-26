@@ -21,3 +21,13 @@ Made by: Lejara (Leonel Jara)
 - !setRemoveFirstWord (bool) - if true, will remove the first word of a channel only when a topic is set.
 - !addThisVChannel - add useble voice channels for maketeams command.
 - !removeThisVChannel remove useble voice channels for maketeams command.
+
+### Setup
+
+1. Fill out ConfigCore/BotConfig.json
+
+    -Add Your Discord Bot Token, you get your token at https://discordapp.com/developers/applications/
+    
+    -Add Your Command Prefix
+    
+2. Run DiscordButlerBot.exe
