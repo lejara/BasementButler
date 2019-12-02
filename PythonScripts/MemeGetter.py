@@ -12,32 +12,32 @@ import random
 import praw
 import sys
 
-def GetRedditDankMemes(link):
-
-    reddit = praw.Reddit(client_id='LzijuOQxVi7TRA',
-                     client_secret='vKkHdmjobRKjj4K6aNEfzqGwS8U',
-                     user_agent='Windows MemeBot by /u/ leoleojar')
-    memeImg = []
-    for submission in reddit.subreddit('dankmemes').hot(limit=55):
-        if not submission.is_self:
-            memeImg.append(submission.url)
-
-    print(memeImg[random.randrange(0, len(memeImg))])
-
-
-def FourChanSFSMemes(link):
-    memePage = requests.get(link)
-    soup_shop = BeautifulSoup(memePage.content, "html5lib")
-
-    imgs = []
-    threads = soup_shop.find_all("div", {"class" : "thread"})
-
-    for thread in threads:
-        imgLink = "http:" + thread.find("a", {"class" : "fileThumb"})['href']
-        imgs.append(imgLink)
-
-    if len(imgs) != 0:
-        print(imgs[random.randrange(0, len(imgs))])
+# def GetRedditDankMemes(link):
+#
+#     reddit = praw.Reddit(client_id='LzijuOQxVi7TRA',
+#                      client_secret='vKkHdmjobRKjj4K6aNEfzqGwS8U',
+#                      user_agent='Windows MemeBot by /u/ leoleojar')
+#     memeImg = []
+#     for submission in reddit.subreddit('dankmemes').hot(limit=55):
+#         if not submission.is_self:
+#             memeImg.append(submission.url)
+#
+#     print(memeImg[random.randrange(0, len(memeImg))])
+#
+#
+# def FourChanSFSMemes(link):
+#     memePage = requests.get(link)
+#     soup_shop = BeautifulSoup(memePage.content, "html5lib")
+#
+#     imgs = []
+#     threads = soup_shop.find_all("div", {"class" : "thread"})
+#
+#     for thread in threads:
+#         imgLink = "http:" + thread.find("a", {"class" : "fileThumb"})['href']
+#         imgs.append(imgLink)
+#
+#     if len(imgs) != 0:
+#         print(imgs[random.randrange(0, len(imgs))])
 
 
 def FourChanKeywordSearch(keyword, current_poll_ammount = 0):
@@ -59,6 +59,9 @@ def FourChanKeywordSearch(keyword, current_poll_ammount = 0):
     if len(contents) != 0:
         randomIndex = random.randrange(0, len(contents))
         print(contents[randomIndex])
+        return True
+    else:
+        return False
 
 def RedditSearchKeyword(keyword):
         reddit = praw.Reddit(client_id='LzijuOQxVi7TRA',
@@ -75,32 +78,32 @@ def RedditSearchKeyword(keyword):
 
         if len(contents) != 0:
             print(contents[random.randrange(0, len(contents))])
-
-memeRepoRandom = {
-    "No Link": GetRedditDankMemes,
-    "http://boards.4chan.org/s4s/": FourChanSFSMemes
-
-}
+            return True
+        else:
+            return False
 
 memeRepoKeyword = [
     FourChanKeywordSearch,
     RedditSearchKeyword
 ]
 
-def Random_Pick():
-    randomIndex = random.randrange(0, len(memeRepoRandom))
-    link = list(memeRepoRandom.keys())[randomIndex]
-    func = list(memeRepoRandom.values())[randomIndex](link)
-
 def RandomKeyword_Pick(keyword):
-    memeRepoKeyword[random.randrange(0, len(memeRepoKeyword))](keyword)
+    randomNum = random.randrange(0, len(memeRepoKeyword))
+    if (memeRepoKeyword[randomNum](keyword) == False):
+        ctr = 0;
+        while ctr <= len(memeRepoKeyword) - 2 :
+            randomNum = randomNum + 1
+            if(memeRepoKeyword[randomNum % len(memeRepoKeyword)](keyword) == True):
+                break
+            ctr = ctr + 1
+
+
 
 
 if len(sys.argv) > 1:
     RandomKeyword_Pick(str(sys.argv[1]))
 else:
-    # RandomKeyword_Pick("fun")
+    RandomKeyword_Pick("fun")
     # FourChanKeywordSearch("leption")
     # RedditSearchKeyword("cookies")
     # FourChanSFSMemes("http://boards.4chan.org/s4s/")
-    Random_Pick()

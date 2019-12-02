@@ -125,7 +125,7 @@ namespace DiscordButlerBot.Commands
                 "!rmvctopic - Removes the topic to the voice channel your currently in.\n\n" +
                 "!listvoice - list all users in your current voice channel.\n\n" +
                 "!stepout (@mention) - disconnects the target user from voice chat\n\n" +
-                "!meme (keyword) - Will give you picture of a meme. Has a small chance of #%#@" +
+                "!m (keyword) - Will give you picture based on word. Has a small chance of #%#@" +
                 "```";
             await Context.Channel.SendMessageAsync(msg);
         }
@@ -315,19 +315,27 @@ namespace DiscordButlerBot.Commands
         }
         [Command("meme")]
         public async Task GetMeme([Remainder] string keyword = "")
-        {            
-            string output = Run_Python("MemeGetter.py", keyword);
-            if (output == "") {
-                await Context.Channel.SendMessageAsync("No meme found : (");
-            }
-            else
+        {
+            if (keyword == "")
             {
-                EmbedBuilder embed = new EmbedBuilder();
-
-                embed.ImageUrl = output;
-                await Context.Channel.SendMessageAsync("", false, embed);
+                await Context.Channel.SendMessageAsync("Please give me a keyword. \" !m (keyword) \" ");
             }
-            
+            else {
+                using (Context.Channel.EnterTypingState()) {
+                    string output = Run_Python("MemeGetter.py", keyword);
+                    if (output == "")
+                    {
+                        await Context.Channel.SendMessageAsync("Sorry Master, Nothing Found :(");
+                    }
+                    else
+                    {
+                        EmbedBuilder embed = new EmbedBuilder();
+                        embed.ImageUrl = output;
+                        await Context.Channel.SendMessageAsync("", false, embed);
+                    }
+                }
+
+            }                        
         }
 
         [Command("m")]
