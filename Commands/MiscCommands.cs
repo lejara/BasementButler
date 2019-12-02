@@ -314,7 +314,6 @@ namespace DiscordButlerBot.Commands
 
         }
         [Command("meme")]
-        [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task GetMeme([Remainder] string keyword = "")
         {            
             string output = Run_Python("MemeGetter.py", keyword);
@@ -329,6 +328,12 @@ namespace DiscordButlerBot.Commands
                 await Context.Channel.SendMessageAsync("", false, embed);
             }
             
+        }
+
+        [Command("m")]
+        public async Task GetMeme_m([Remainder] string keyword = "")
+        {
+            await GetMeme(keyword);
         }
     }
 }
