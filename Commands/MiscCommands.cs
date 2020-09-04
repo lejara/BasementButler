@@ -16,17 +16,11 @@ namespace DiscordButlerBot.Commands
         //Owner Only commands----------------------------------------------------------
         [Command("welcome")]
         [RequireOwner]
-        public async Task Welcome() {
+        public async Task Welcome(string s = "") {
 
-            await Context.Channel.SendMessageAsync("**Greetings, glad to be of service !~~~ ** ");
+            await Context.Channel.SendMessageAsync("Good to be back Father <3 " + Context.User.Mention);
 
-            foreach (var role in Context.Guild.Roles) {
-                if (!(role.Name.Contains("everyone") || role.Name.Contains("Basement")))
-                {
-                    await Context.Channel.SendMessageAsync(role.Mention);
-                }
-
-            }            
+                   
         }
         [Command("setTopicLength")]
         [RequireOwner]
