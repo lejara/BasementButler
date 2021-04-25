@@ -131,11 +131,11 @@ namespace DiscordButlerBot.Commands
                 "!hi - Say hi.\n\n" +                
                 "!getdrink (name) - Will give you the drink of your liking\n\n" +
                 "!maketeams (#) - Orgainzes a team from voice chat, and can escort teams to different voice channels.\n\n" +
-                "!topic (topic) - Adds a topic to the voice channel your currently in.\n\n" +
-                "!rmtopic - Removes the topic to the voice channel your currently in.\n\n" +
+                "!topic (topic) - Adds a topic to the voice channel your currently in. LIMITED use 10mins\n\n" +
+                "!rmtopic - Removes the topic to the voice channel your currently in. RATE LIMITED use 10mins\n\n" +
                 "!listvoice - list all users in your current voice channel.\n\n" +
                 "!stepout (@mention) - disconnects the target user from voice chat\n\n" +
-                "!m (keyword) - Will give you picture based on word. Has a small chance of NSFW!" +
+                "!m (keyword) - Will give you picture based on word. Warning: chance of NSFW content!" +
                 "```";
             await Context.Channel.SendMessageAsync(msg);
         }
@@ -183,7 +183,6 @@ namespace DiscordButlerBot.Commands
         [Command("topic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task SetVCTopic([Remainder] string newTopic = "") {
-            
             var guildUser = Context.User as IGuildUser;
             var voiceChannelUserIn = guildUser.VoiceChannel;
             if (voiceChannelUserIn != null)
@@ -232,7 +231,7 @@ namespace DiscordButlerBot.Commands
         [Command("rmtopic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task ClearVCTopic(){
-
+            
             var callingUser = Context.User as IGuildUser;
             var voiceChannelUserIn = callingUser.VoiceChannel;
             string vcName = voiceChannelUserIn.Name;
@@ -246,7 +245,7 @@ namespace DiscordButlerBot.Commands
                     }
 
                     await callingUser.VoiceChannel.ModifyAsync(x =>
-                    {
+                    {                        
                         x.Name = vcName;
                     });
                     await Context.Channel.SendMessageAsync( String.Format("Master {0}, topic was removed in {1}", callingUser.Mention, vcName));
@@ -319,7 +318,7 @@ namespace DiscordButlerBot.Commands
                     listingReplyMsg += "\n";
                 }
                 em.WithDescription(listingReplyMsg);
-                await Context.Channel.SendMessageAsync("Master " + guildUser.Mention + ", here is your list: \n", false, em);
+                await Context.Channel.SendMessageAsync("Master " + guildUser.Mention + ", here is your list: \n", false, em.Build());
             }
             else {
                 await Context.Channel.SendMessageAsync(String.Format("Sorry master {0}, you need to be in a voice channel to use this command.", Context.User.Mention));
@@ -344,7 +343,7 @@ namespace DiscordButlerBot.Commands
                     {
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.ImageUrl = output;
-                        await Context.Channel.SendMessageAsync("", false, embed);
+                        await Context.Channel.SendMessageAsync("", false, embed.Build());
                     }
                 }
 

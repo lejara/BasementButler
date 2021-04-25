@@ -43,7 +43,7 @@ namespace DiscordButlerBot.Commands
                     embed.WithFooter("Would you like to \"!MakeRandom\" the teams, or \"!exclude #\" a user?");
                     Config.serverData[guildUser.Guild.Id].teamMakerInfo_.currentStage_ = TeamMakingStages.listing;
 
-                    await Context.Channel.SendMessageAsync(msg, false, embed);
+                    await Context.Channel.SendMessageAsync(msg, false, embed.Build());
                 }
                 else {
                     await Context.Channel.SendMessageAsync("There are far too few users for the number of teams you like master!");
@@ -84,7 +84,7 @@ namespace DiscordButlerBot.Commands
                             string msg = String.Format("I have removed \"{0}\" from the list. The new list is now: \n", name);
                             EmbedBuilder embed = Config.serverData[guildUser.Guild.Id].teamMakerInfo_.ListUsersInVoiceEmbed();
                             embed.WithFooter("Would you like to \"!MakeRandom\" the teams, or again \"!exclude #\" a user?");
-                            await Context.Channel.SendMessageAsync(msg, false, embed);
+                            await Context.Channel.SendMessageAsync(msg, false, embed.Build());
                         }
                         else {
                             await Context.Channel.SendMessageAsync(String.Format("Master {0}, there are now too few users to be in the teams you like now. Remake (!MakeTeams #).", Context.User.Mention));
@@ -140,7 +140,7 @@ namespace DiscordButlerBot.Commands
                     embed.WithFooter("Cannot move teams, not enough voice channels for each teams");
                 }
                 
-                await Context.Channel.SendMessageAsync("These are the teams: \n", false, embed);
+                await Context.Channel.SendMessageAsync("These are the teams: \n", false, embed.Build());
             }
         }
         

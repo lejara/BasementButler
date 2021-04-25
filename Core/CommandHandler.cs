@@ -21,7 +21,7 @@ namespace DiscordButlerBot.Core
             client_ = client;
             service_ = new CommandService();
             //load the modules
-            await service_.AddModulesAsync(Assembly.GetEntryAssembly());
+            await service_.AddModulesAsync(Assembly.GetEntryAssembly(), null);
             
             client_.MessageReceived += HandleCommandAsync;
 
@@ -48,7 +48,7 @@ namespace DiscordButlerBot.Core
         }
 
         public async Task ExcuteCommand(SocketUserMessage userMsg) {
-            var result = await service_.ExecuteAsync(new SocketCommandContext(client_, userMsg), argPos); // fancy magic
+            var result = await service_.ExecuteAsync(new SocketCommandContext(client_, userMsg), argPos, null); // fancy magic
             if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
             {
                 Console.WriteLine("Error: " + result.ErrorReason);

@@ -38,30 +38,31 @@ namespace DiscordButlerBot.Core
 
         static private void TrackTopicExpiry()
         {
-            RT(() =>
+            RT(async () =>
             {
+                List<VCTopicData> removed = new List<VCTopicData>();
                 foreach (var topicData in topicTracking)
                 {
                     string vcName = topicData.voiceChannel.Name;
                     //DateTime.Now - topicData.dateTime).TotalHours
-                    if ((DateTime.Now - topicData.dateTime).TotalSeconds > 7) {
+                    if ((DateTime.Now - topicData.dateTime).TotalHours > 5) {
 
                         if (RemoveTopicBracket(ref vcName))
                         {
-                            //if (Config.serverData[callingUser.GuildId].removeFirstWord_)
-                            //{
-                            //    vcName = String.Format("{0}{1}", Config.serverData[callingUser.GuildId].firstWordTitle_, vcName);
-                            //    Config.serverData[callingUser.GuildId].firstWordTitle_ = "";
-                            //}
                             Console.WriteLine("Removing Expired Topic....  " + topicData.voiceChannel.Name);
-                            topicData.voiceChannel.ModifyAsync(x =>
+                            await topicData.voiceChannel.ModifyAsync(x =>
                             {
                                 x.Name = vcName;
                             });
-
+                            removed.Add(topicData);
                         }
                     }                                        
                 }
+                foreach (var topicData in removed) {
+                    topicTracking.Remove(topicData);
+                }
+                removed.Clear();
+
             }, 2, TrackingTopicToken);
         }
 
