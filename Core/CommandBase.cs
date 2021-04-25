@@ -25,19 +25,6 @@ namespace DiscordButlerBot.Commands
             return username;
         }
 
-        //Returns a changed ref of a string, returns flase if brackets did not exist
-        protected bool RemoveTopicBracket(ref string name)
-        {
-            bool hasRemoved = false;
-            int index = name.IndexOf("(");
-            if (index != -1)
-            {
-                name = name.Remove(index - 1);
-                hasRemoved = true;
-            }
-            return hasRemoved;
-        }
-
         protected string RemoveChannelNameFirstWord(string s, ulong serverId) {
             Config.serverData[serverId].firstWordTitle_ = s.Substring(0, s.IndexOf(' ') + 1);
             return s.Substring(s.IndexOf(' ') + 1);

@@ -136,6 +136,7 @@
     <Compile Include="Commands\TeamsCommand\TeamMakerCommands.cs" />
     <Compile Include="Core\CommandHandler.cs" />
     <Compile Include="Core\Config.cs" />
+    <Compile Include="Core\FuncHelpers.cs" />
     <Compile Include="Core\Program.cs" />
     <Compile Include="Core\GuildServerData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

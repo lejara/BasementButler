@@ -41,14 +41,18 @@ namespace DiscordButlerBot.Core
                 if (userMsg.HasStringPrefix(Config.bot.cmdPrefix, ref argPos) || userMsg.HasMentionPrefix(client_.CurrentUser, ref argPos))
                 {
                     Console.WriteLine("Mentioned Received");
-                    var result = await service_.ExecuteAsync(new SocketCommandContext(client_, userMsg), argPos); // fancy magic
-                    if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
-                    {
-                        Console.WriteLine("Error: " + result.ErrorReason);
-                    }
+                    await ExcuteCommand(userMsg);
                 }
             }
             
+        }
+
+        public async Task ExcuteCommand(SocketUserMessage userMsg) {
+            var result = await service_.ExecuteAsync(new SocketCommandContext(client_, userMsg), argPos); // fancy magic
+            if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
+            {
+                Console.WriteLine("Error: " + result.ErrorReason);
+            }
         }
     }
 }

@@ -14,11 +14,27 @@ namespace DiscordButlerBot.Commands
     public class MiscCommands : CommandBase
     {
         //Owner Only commands----------------------------------------------------------
+
+        [Command("ownercommands")]
+        [RequireOwner]
+        public async Task OwnerCommands()
+        {
+            string msg =
+                "\n These are your commands father " + Context.User.Mention + " : \n" +
+                "```" +
+                "!setTopicLength\n\n" +
+                "!setTopicLength \n\n" +
+                "!addThisVChannel \n\n" +
+                "!removeThisVChannel \n\n" +
+                "```";
+            await Context.Channel.SendMessageAsync(msg);
+        }
+
         [Command("welcome")]
         [RequireOwner]
         public async Task Welcome(string s = "") {
 
-            await Context.Channel.SendMessageAsync("Good to be back Father <3 " + Context.User.Mention);
+            await Context.Channel.SendMessageAsync("Good to be back master " + Context.User.Mention + " <3");
 
                    
         }
@@ -38,26 +54,26 @@ namespace DiscordButlerBot.Commands
             }
 
         }
-        [Command("setRemoveFirstWord")]
-        [RequireOwner]
-        public async Task SetBoolFirstWord(string p = "") {
-            var guildUser = Context.User as IGuildUser;
-            if (p.ToLower().Contains("true"))
-            {
-                Config.serverData[guildUser.GuildId].removeFirstWord_ = true;
-                await Context.Channel.SendMessageAsync("Removal of first word in topic vc is now " + Config.serverData[guildUser.GuildId].removeFirstWord_);
-                Config.SaveServerData();
-            }
-            else if (p.ToLower().Contains("false"))
-            {
-                Config.serverData[guildUser.GuildId].removeFirstWord_ = false;
-                await Context.Channel.SendMessageAsync("Removal of first word in topic vc is now " + Config.serverData[guildUser.GuildId].removeFirstWord_);
-                Config.SaveServerData();
-            }
-            else {
-                await Context.Channel.SendMessageAsync("Could not set bool. \"!setRemoveFirstWord (bool)\"");
-            }            
-        }
+        //[Command("setRemoveFirstWord")]
+        //[RequireOwner]
+        //public async Task SetBoolFirstWord(string p = "") {
+        //    var guildUser = Context.User as IGuildUser;
+        //    if (p.ToLower().Contains("true"))
+        //    {
+        //        Config.serverData[guildUser.GuildId].removeFirstWord_ = true;
+        //        await Context.Channel.SendMessageAsync("Removal of first word in topic vc is now " + Config.serverData[guildUser.GuildId].removeFirstWord_);
+        //        Config.SaveServerData();
+        //    }
+        //    else if (p.ToLower().Contains("false"))
+        //    {
+        //        Config.serverData[guildUser.GuildId].removeFirstWord_ = false;
+        //        await Context.Channel.SendMessageAsync("Removal of first word in topic vc is now " + Config.serverData[guildUser.GuildId].removeFirstWord_);
+        //        Config.SaveServerData();
+        //    }
+        //    else {
+        //        await Context.Channel.SendMessageAsync("Could not set bool. \"!setRemoveFirstWord (bool)\"");
+        //    }            
+        //}
         [Command("addThisVChannel")]
         [RequireOwner]
         public async Task AddChannel() {
@@ -113,13 +129,13 @@ namespace DiscordButlerBot.Commands
                 "\n These are your commands master " + Context.User.Mention + " : \n" +
                 "```" +
                 "!hi - Say hi.\n\n" +                
-                "!getdrink (name) - Will give you the drink of your liking *wink*\n\n" +
-                "!maketeams # - Orgainzes a team from voice chat, and can escort teams to different voice channels.\n\n" +
-                "!vctopic (topic) - Adds a topic to the voice channel your currently in.\n\n" +
-                "!rmvctopic - Removes the topic to the voice channel your currently in.\n\n" +
+                "!getdrink (name) - Will give you the drink of your liking\n\n" +
+                "!maketeams (#) - Orgainzes a team from voice chat, and can escort teams to different voice channels.\n\n" +
+                "!topic (topic) - Adds a topic to the voice channel your currently in.\n\n" +
+                "!rmtopic - Removes the topic to the voice channel your currently in.\n\n" +
                 "!listvoice - list all users in your current voice channel.\n\n" +
                 "!stepout (@mention) - disconnects the target user from voice chat\n\n" +
-                "!m (keyword) - Will give you picture based on word. Has a small chance of #%#@" +
+                "!m (keyword) - Will give you picture based on word. Has a small chance of NSFW!" +
                 "```";
             await Context.Channel.SendMessageAsync(msg);
         }
@@ -158,13 +174,13 @@ namespace DiscordButlerBot.Commands
                       
             if (!(username.Contains("nemu") || hasName))
             {
-                await Context.Channel.SendMessageAsync("BAKA! *slaps you* ");
+                await Context.Channel.SendMessageAsync("*slaps you* ");
             }
             else {
-                await Context.Channel.SendMessageAsync(String.Format("AAAAHH~!! YES SENPAIIII <3~~~ {0}", Context.User.Mention));
+                await Context.Channel.SendMessageAsync(String.Format("AAAAHH~!! YES <3~~~ {0}", Context.User.Mention));
             }            
         }
-        [Command("vctopic")]
+        [Command("topic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task SetVCTopic([Remainder] string newTopic = "") {
             
@@ -187,14 +203,17 @@ namespace DiscordButlerBot.Commands
                             vcName = voiceChannelUserIn.Name;
                         }                       
 
-                        string vcNameNoTopic = RemoveTopicBracket(ref vcName) == false ? voiceChannelUserIn.Name : vcName;
+                        string vcNameNoTopic = FuncHelpers.RemoveTopicBracket(ref vcName) == false ? voiceChannelUserIn.Name : vcName;
 
                         vcName += String.Format(" ({0})", newTopic);
                         await guildUser.VoiceChannel.ModifyAsync(x =>
                         {
                             x.Name = vcName;
                         });
-                        await Context.Channel.SendMessageAsync(String.Format("Master {0}, topic is now set to \"{1}\" in {2}", 
+
+                        FuncHelpers.AddTopicTracking(new VCTopicData(DateTime.Now, voiceChannelUserIn));
+
+                        await Context.Channel.SendMessageAsync(String.Format("Master {0}, the topic is now set to \"{1}\" in {2}", 
                             guildUser.Mention, newTopic, String.Format("{0}{1}", Config.serverData[guildUser.GuildId].firstWordTitle_, vcNameNoTopic)));
                     }
                     else {
@@ -210,7 +229,7 @@ namespace DiscordButlerBot.Commands
                 await Context.Channel.SendMessageAsync(String.Format("Master {0}, you need to be in a voice channel to set a topic!", guildUser.Mention));
             }
         }
-        [Command("rmvctopic")]
+        [Command("rmtopic")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task ClearVCTopic(){
 
@@ -219,7 +238,7 @@ namespace DiscordButlerBot.Commands
             string vcName = voiceChannelUserIn.Name;
             if (voiceChannelUserIn != null)
             {
-                if (RemoveTopicBracket(ref vcName))
+                if (FuncHelpers.RemoveTopicBracket(ref vcName))
                 {
                     if (Config.serverData[callingUser.GuildId].removeFirstWord_) {
                         vcName = String.Format("{0}{1}", Config.serverData[callingUser.GuildId].firstWordTitle_, vcName);
@@ -288,7 +307,7 @@ namespace DiscordButlerBot.Commands
 
                 var users = voiceChannelUserIn.Users;
                 string vcName = voiceChannelUserIn.Name;
-                RemoveTopicBracket(ref vcName);
+                FuncHelpers.RemoveTopicBracket(ref vcName);
                 EmbedBuilder em = new EmbedBuilder();
                 em.WithTitle("Members in Voice " + vcName);
                 em.WithColor(new Color(10, 10, 10));

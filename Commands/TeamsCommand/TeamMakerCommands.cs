@@ -13,6 +13,7 @@ namespace DiscordButlerBot.Commands
 {
     public class TeamMakerCommands : CommandBase
     {
+
         [Command("MakeTeams")]
         [RequireUserPermission(Discord.GuildPermission.MoveMembers)]
         public async Task MakeTeams(string numOfTeams = ""){

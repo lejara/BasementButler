@@ -15,8 +15,8 @@ namespace DiscordButlerBot
     class Program
     {
         public static double versionMajor = 2;
-        public static double versionMinor = 2; 
-        public static double versionPatch = 2; 
+        public static double versionMinor = 3; 
+        public static double versionPatch = 0; 
 
         public DiscordSocketClient client_;
         public CommandHandler handler_;
@@ -35,6 +35,9 @@ namespace DiscordButlerBot
                 client_.Log += Client_Logging;
                 client_.GuildAvailable += InitJoinedGuild;
                 client_.JoinedGuild += InitJoinedGuild;
+
+                //Init Func Helper
+                FuncHelpers.Init();
 
                 // Login/Start
                 await client_.LoginAsync(TokenType.Bot, Config.bot.token);
